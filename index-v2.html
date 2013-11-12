@@ -21,34 +21,31 @@
         shape-rendering: crispEdges;
       }
 
-      .area.above {
+      .area_1 {
         fill: royalblue;
         opacity: 0.5;
       }
 
-      .area.below {
+      .area_2 {
         fill: crimson;
         opacity: 0.3;
-      }
-
-      .line {
-        fill: none;
-        stroke: #000;
-        stroke-width: 1.5px;
       }
 
     </style>
   </head>
   <body>
 
-    <div id="graph_container_1" class="graph_container"><p>Traffic Graph of Difference between 2 Datasets</p></div>
+    <div id="graph_container_1" class="graph_container"><p>Traffic Graph of 2 Datasets w/ Moving Average</p></div>
 
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" charset="utf-8">
     
     /* 
-    Made a single JSON file with both datasets.
-    This is how it should be in the final setup.
+    Currently we are using 2 JSON files, 1 per dataset. However we will need all data to be in one file in the future (once we setup the output on our Twitter data sources).
+    That's necessary so we can set everything once and do things like:
+    y.domain([0, d3.max(data, function(d) { return Math.max(d.value_set1, d.value_set2); })]);
+    As well as lots of other stuff, like this:
+    http://bl.ocks.org/mbostock/3894205
     */
 
     // - - - - - - - - - - General vars - - - - - - - - - - 
@@ -71,18 +68,11 @@
     var yAxis = d3.svg.axis()
         .scale(y)
         .orient("left");
-
-    // 
-    var line = d3.svg.area()
-    .interpolate("basis")
-    .x(function(d) { return x(d.key); })
-    .y(function(d) { return y(d.value1); });
-
-    // 
+    // Setup SVG area fill displayed under a line of data.
     var area = d3.svg.area()
-    .interpolate("basis")
-    .x(function(d) { return x(d.key); })
-    .y1(function(d) { return y(d.value1); });
+        .x(function(d) { return x(d.key); })
+        .y0(height)
+        .y1(function(d) { return y(d.value); });
     
 
     // - - - - - - - - - - DATASET 1 - - - - - - - - - - 
@@ -96,52 +86,23 @@
       .append("g")                                // "g" is a SVG group element for applying properties to many objects at once.
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("by_date_mod-v3.json", function(error, data) {
+    // Use the JSON data to draw the graph's line points.
+    // Use the modified version of the original data file. We removed the first row of data which had empty values ({"key":[null,null,null,null],"value":375}) which breaks the graph.
+    d3.json("by_date_mod.json", function(error, data) {
       // console.log(data);
       
       // Setup each row of data by formatting the Date for X, and by converting to a number for Y.
       data = data.rows;                           // Descend one level to be where the rows are.
       data.forEach(function(d) {
-        d.key = parseDate(String(d.key));
-        d.value1 = +d.value1;
-        d.value2 = +d.value2;
+        d.key = parseDate(String(d.key));         // "key" is X value.
+        d.value = +d.value;                       // "value" is Y value. Converts the value to a number (default is string).
         // console.log(String(d.key));
         // console.log(d.value);
       });
 
       // what's a domain exactly?
       x.domain(d3.extent(data, function(d) { return d.key; }));
-      y.domain([0, d3.max(data, function(d) { return Math.max(d.value1, d.value2); })]);
-
-
-      graph1.datum(data);
-
-      graph1.append("clipPath")
-          .attr("id", "clip-below")
-        .append("path")
-          .attr("d", area.y0(height));
-
-      graph1.append("clipPath")
-          .attr("id", "clip-above")
-        .append("path")
-          .attr("d", area.y0(0));
-
-      graph1.append("path")
-          .attr("class", "area above")
-          .attr("clip-path", "url(#clip-above)")
-          .attr("d", area.y0(function(d) { return y(d.value2); }));
-
-      graph1.append("path")
-          .attr("class", "area below")
-          .attr("clip-path", "url(#clip-below)")
-          .attr("d", area);
-
-      graph1.append("path")
-          .attr("class", "line")
-          .attr("d", line);
-
-
-      /*
+      y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
       // Setup the moving average calculation.
       // Currently is a hacky way of doing it by manually storing and using the previous 3 values for averaging.
@@ -176,10 +137,6 @@
           .datum(data)
           .attr("class", "area_1")
           .attr("d", area);
-      
-      */
-
-
 
       // Draw the X-axis of the graph.
       graph1.append("g")
@@ -197,6 +154,56 @@
           .attr("dy", ".71em")
           .style("text-anchor", "end")
           .text("Value (tweets)");
+    });
+    
+
+    // - - - - - - - - - - DATASET 2 - - - - - - - - - - 
+
+    // Here, using the raw JSON file works fine, since it doesn't have a bogus first line like the previous file.
+    d3.json("by_date_mod-v2.json", function(error, data) {
+      // console.log(data);
+      
+      data = data.rows;                           // Descend one level to be where the rows are.
+      data.forEach(function(d) {
+        d.key = parseDate(String(d.key));
+        d.value = +d.value;                       // Converts the value to a number (default is string).
+        // console.log(String(d.key));
+        // console.log(d.value);
+      });
+
+      // what's a domain exactly?
+      x.domain(d3.extent(data, function(d) { return d.key; }));
+      y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+      var _movingSum;
+      var prevPrevVal = 0;
+      var prevVal = 0;
+      var area = d3.svg.area()
+        .x(function(d) { return x(d.key); })
+        .y0(height)
+        .y1(function(d,i) {
+          if (i == 0) {
+              prevPrevVal  = y(d.value);
+              prevVal = y(d.value);
+              return y(d.value);
+          } else if (i == 1) {
+              prevPrevVal = prevVal;
+              prevVal = y(d.value);
+              return prevVal/2.0 + y(d.value)/2.0;
+          } else {
+              prevPrevVal = prevVal;
+              prevVal = y(d.value);
+            return prevPrevVal/3.0 + prevVal/3.0 + y(d.value)/3.0
+          }
+        })
+        .interpolate("basis");
+      
+      // Draw the raw data as a line.
+      graph1.append("path")
+          .datum(data)
+          .attr("class", "area_2")
+          .attr("d", area);
+
     });
     
   </script>
