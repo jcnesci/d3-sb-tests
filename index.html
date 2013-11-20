@@ -8,13 +8,23 @@
         font: 10px sans-serif;
         color: black;
       }
-
       .graph_container {
-        position: relative;
-        margin: 100px auto;
-        width: 960px;
+        /*position: relative;*/
+        margin: 0 auto;
+        width: 1200px;
       }
-      
+      .column1{
+        float: left;
+        width: 550px;
+      }
+      .column2{
+        float: right;
+        width: 550px;
+      }
+      .graph{
+        margin-top:50px;
+        margin-bottom:50px;
+      }
       .axis path,
       .axis line {
         fill: none;
@@ -24,27 +34,41 @@
       .axis-text {
         color: red;
       }
-
       .area_value1 {
-        fill: url(#first-gradient);
+        /*fill: url(#first-gradient);*/
+        fill: #FF6319;
         stroke-width: 0px;
-        opacity: 0.7;
+        opacity: 0.6;
       }
-
       .area_value2 {
-        fill: url(#second-gradient);
+        /*fill: url(#second-gradient);*/
+        fill: #C60C30;
         stroke-width: 0px;
-        opacity: 0.7;
+        opacity: 0.6;
       }
-
       h1 {
+        text-transform: uppercase;
+        font-size: 5em;
+        background-color: black;
+        color: white;
+        padding-left: 10px;
+      }
+      h2 {
         text-transform: uppercase;
         font-size: 3em;
         line-height: 0.3em;
       }
       p {
         font-size: 12px;
+        font-weight: normal;
+      }
+      p.title {
+        font-size: 2em;
         font-weight: bold;
+        text-transform: uppercase;
+        background-color: black;
+        color: white;
+        padding: 20px;
       }
       span.chiefs {
         color: #C60C30;
@@ -52,15 +76,37 @@
       span.broncos {
         color: #FF6319;
       }
+      #soso-logo {
+        width: 150px;
+        height:48px;
+        background-image: url("img/SosoLogo_Small_white.png");
+        background-size: 150px 48px;
+        background-repeat:no-repeat;
+        margin: 10px;
+        display: inline-block;
 
+      }
     </style>
   </head>
   <body>
+    <h1>SosoBowl</h1>
+    
 
-    <div id="graph_container_1" class="graph_container"><h1># Tweets / hour</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
-    <div id="graph_container_2" class="graph_container"><h1>Positive Mentions / hour</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
-    <div id="graph_container_3" class="graph_container"><h1>Confidence</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
-
+    <div class="graph_container">
+      <p class="title"><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p>
+      <div class="column1">
+        <h1>Per Hour</h1>
+        <div id="graph_container_1" class="graph"><h2># Tweets</h2><p>/game/tweets?time=hour&num=24</p></div>
+        <div id="graph_container_2" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=hour&num=24</p></div>
+        <div id="graph_container_3" class="graph"><h2>Confidence</h2><p>/game/confidence?time=hour&num=24</p></div>
+      </div>
+      <div class="column2">
+        <h1>Per Minute</h1>
+        <div id="graph_container_4" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
+        <div id="graph_container_5" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
+        <div id="graph_container_6" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
+      </div>
+    </div>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" charset="utf-8">
     
@@ -68,11 +114,13 @@
 
     // Vars for graph size.
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 550 - margin.left - margin.right,
+        height = 300 - margin.top - margin.bottom;
     // Our Date parsing format.
-    // TODO: right now it ignores 15-minutes and minutes units. Need to handle these eventually...
-    var parseDate = d3.time.format("%Y,%m,%d,%H").parse;      // "%-" means it ignores padding, removing the need for zero-padding perhaps?
+    // TODO: right now the way we handle different data streams is by ignorning whole unit measures (ie. 15 minutes, single minutes) instead of treating individual null values. Need to improve code.
+    // We have different parsing formats depending on the type of data: daily, hourly, by minute, etc.
+    var parseDateFormat1 = d3.time.format("%Y,%m,%d,%H").parse;             // For data per hour. "%-" means it ignores padding, removing the need for zero-padding perhaps?
+    var parseDateFormat2 = d3.time.format("%Y,%m,%d,%H,%M").parse;          // For data per minute.
     // Setup X and Y scales.
     var x = d3.time.scale()
         .range([0, width]);
@@ -104,50 +152,104 @@
         .attr("top", 100)
       .append("g")                                // "g" is a SVG group element for applying properties to many objects at once.
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var graph4 = d3.select("#graph_container_4").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("top", 100)
+      .append("g")                                // "g" is a SVG group element for applying properties to many objects at once.
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var graph5 = d3.select("#graph_container_5").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("top", 100)
+      .append("g")                                // "g" is a SVG group element for applying properties to many objects at once.
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var graph6 = d3.select("#graph_container_6").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("top", 100)
+      .append("g")                                // "g" is a SVG group element for applying properties to many objects at once.
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     // Create our new data array for storing properly formatted data for D3.
     var data;           
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Data Setup - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     // Use the JSON data : this is real data from our API engine, although it is still in development.
-    
+    // For the data we currently have, value1 = Broncos (orange), and value2 = Chiefs (red).
+
+    // - - - - - - - - - - - - - SECTION 1 : per hour, 24 hours
     // Graph 1 : Tweets
     // d3.json("data-nov7chiefsbroncos-tweets-timehour-num24.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Tweet data instead, from Chiefs VS Broncos on November 17.
     d3.json("http://97.107.131.209:4577/game/tweets?time=hour&num=24", function(error, json_data) {                         // LIVE DATA
-      console.log("- - - - - - - - - - - - - - - - - - ORIGINAL DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #1 ORIGINAL DATA : ")
       console.log(json_data);
-      format_raw_data(json_data);
-      console.log("- - - - - - - - - - - - - - - - - - D3-FORMATTED DATA : ")
+      format_raw_data(json_data, graph1, "value1", "value2", 1);
+      console.log("- - - - - - - - - - - - - - - - - - #1 D3-FORMATTED DATA : ")
       console.log(data);
-      create_graph(graph1, "value1", "value2");
+      // create_graph(graph1, "value1", "value2");
     });
     
     // Graph 2 : Positivity
-    // d3.json("data-nov7chiefsbroncos-positivity-timehour-num24.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Positivity data instead, from Chiefs VS Broncos on November 17.
+    // d3.json("data-nov7chiefsbroncos-pos-timehour-num24.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Positivity data instead, from Chiefs VS Broncos on November 17.
     d3.json("http://97.107.131.209:4577/game/pos?time=hour&num=24", function(error, json_data) {                                // LIVE DATA
-      console.log("- - - - - - - - - - - - - - - - - - ORIGINAL DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #2 ORIGINAL DATA : ")
       console.log(json_data);
-      format_raw_data(json_data);
-      console.log("- - - - - - - - - - - - - - - - - - D3-FORMATTED DATA : ")
+      format_raw_data(json_data, graph2, "value1", "value2", 1);
+      console.log("- - - - - - - - - - - - - - - - - - #2 D3-FORMATTED DATA : ")
       console.log(data);
-      create_graph(graph2, "value1", "value2");
+      // create_graph(graph2, "value1", "value2");
     });
 
     // Graph 3 : Confidence
     // d3.json("data-nov7chiefsbroncos-confidence-timehour-num24.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Confidence data instead, from Chiefs VS Broncos on November 17.
     d3.json("http://97.107.131.209:4577/game/confidence?time=hour&num=24", function(error, json_data) {                         // LIVE DATA
-      console.log("- - - - - - - - - - - - - - - - - - ORIGINAL DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #3 ORIGINAL DATA : ")
       console.log(json_data);
-      format_raw_data(json_data);
-      console.log("- - - - - - - - - - - - - - - - - - D3-FORMATTED DATA : ")
+      format_raw_data(json_data, graph3, "value2", "value1", 1);
+      console.log("- - - - - - - - - - - - - - - - - - #3 D3-FORMATTED DATA : ")
       console.log(data);
-      create_graph(graph3, "value2", "value1");
+      // create_graph(graph3, "value2", "value1");
     });
+
+    // - - - - - - - - - - - - - SECTION 2 : per minute, 1440 minutes
+    // Graph 4 : Tweets
+    // d3.json("data-nov7chiefsbroncos-tweets-timemin-num1440.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Tweet data instead, from Chiefs VS Broncos on November 17.
+    d3.json("http://97.107.131.209:4577/game/tweets?time=min&num=1440", function(error, json_data) {                         // LIVE DATA
+      console.log("- - - - - - - - - - - - - - - - - - #4 ORIGINAL DATA : ")
+      console.log(json_data);
+      format_raw_data(json_data, graph4, "value1", "value2", 2);
+      console.log("- - - - - - - - - - - - - - - - - - #4 D3-FORMATTED DATA : ")
+      console.log(data);
+      // create_graph(graph4, "value1", "value2");
+    });
+    
+    // Graph 5 : Positivity
+    d3.json("data-nov7chiefsbroncos-pos-timemin-num1440.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Positivity data instead, from Chiefs VS Broncos on November 17.
+    // d3.json("http://97.107.131.209:4577/game/pos?time=min&num=1440", function(error, json_data) {                                // LIVE DATA
+      console.log("- - - - - - - - - - - - - - - - - - #5 ORIGINAL DATA : ")
+      console.log(json_data);
+      format_raw_data(json_data, graph5, "value1", "value2", 2);
+      console.log("- - - - - - - - - - - - - - - - - - #5 D3-FORMATTED DATA : ")
+      console.log(data);
+      // create_graph(graph5, "value1", "value2");
+    });
+
+    // Graph 6 : Confidence
+    // d3.json("data-nov7chiefsbroncos-confidence-timemin-num1440.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Confidence data instead, from Chiefs VS Broncos on November 17.
+    d3.json("http://97.107.131.209:4577/game/confidence?time=min&num=1440", function(error, json_data) {                         // LIVE DATA
+      console.log("- - - - - - - - - - - - - - - - - - #6 ORIGINAL DATA : ")
+      console.log(json_data);
+      format_raw_data(json_data, graph6, "value1", "value2", 2);
+      console.log("- - - - - - - - - - - - - - - - - - #6 D3-FORMATTED DATA : ")
+      console.log(data);
+      // create_graph(graph6, "value1", "value2");
+    });    
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Functions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     // Preprocess the raw data in order to have rows that contain: time, AFC value, NFC value.
-    function format_raw_data(raw_data) {
+    function format_raw_data(raw_data, cur_graph, front_dataset, back_dataset, parse_format) {
       data = [];      // clear data array
 
       // first, check if AFC and NFC have same length
@@ -158,7 +260,12 @@
         raw_data.afc.map(function (cur_row, index) {
           // console.log(cur_row);
           // console.log(cur_row.time[4]);
-          cur_row.time.splice(4);                                       // remove the last 2 units for now : the 15-minute and single minute units.
+          if (parse_format === 1) {
+            cur_row.time.splice(4);                                     // TODO: removes the last 2 units for now : the 15-minute and single minute units. Eventually we need to handle them.
+          } else if (parse_format === 2) {
+            cur_row.time.splice(4, 1);                                  // TODO: remove the 15 minute unit but keep the single minutes, for this time format.
+          }
+
           var new_row = {};                                             // use an object/associative array to store the 3 values of a new row
           new_row["time"] = cur_row.time;                               // store the time
           new_row["value1"] = cur_row.value;                            // store the AFC value as "value1"
@@ -167,32 +274,46 @@
           // console.log(data);
         });
 
+        create_graph(cur_graph, front_dataset, back_dataset, parse_format);
+
       } else {
-        console.log("m- PROBLEM- Original AFC and NFC arrays not same length.")
+        console.log("m- ************* PROBLEM ************* Original AFC and NFC arrays not same length.")
       }
     }
 
     // create the graphs/charts
-    function create_graph(cur_graph, front_dataset, back_dataset) {
+    function create_graph(cur_graph, front_dataset, back_dataset, parse_format) {
 
       // Setup each row of data by formatting the Date for X, and by converting to a number for Y.
       // data = data.rows;                           // Descend one level to be where the rows are.
       data.forEach(function(d) {
-        console.log("time = "+ String(d.time));
-        d.time = parseDate(String(d.time));         // "time" is X value.
+        console.log("time PRE = "+ String(d.time));
+        if (parse_format === 1) {
+          d.time = parseDateFormat1(String(d.time));         // "time" is X value.
+        } else if (parse_format === 2) {
+          d.time = parseDateFormat2(String(d.time));
+        }
         d.value1 = +d.value1;                       // "value" is Y value. Converts the value to a number (default is string).
         d.value2 = +d.value2;
-        // console.log("time = "+ String(d.time));
+        console.log("time POST = "+ String(d.time));
         // console.log("value1 = "+ d.value1);
         // console.log("value2 = "+ d.value2);
       });
 
       // set the X and Y domains
       x.domain(d3.extent(data, function(d) { return d.time; }));
-      y.domain([
-        d3.min(data, function(d) { return Math.min(d.value1, d.value2); }),
-        d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
-      ]);
+      if (cur_graph === graph3) {
+        y.domain([
+          d3.min(data, function(d) { return Math.min(d.value1, d.value2)/1.3; }),
+          d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
+        ]);
+      } else {
+        y.domain([
+          d3.min(data, function(d) { return Math.min(d.value1, d.value2); }),
+          d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
+        ]);
+      }
+      // console.log("t- * * * * * * * * * * * * * * * * * * The MAX Y value = "+ d3.max(data, function(d) { return Math.max(d.value1, d.value2); }));
 
       // define fill gradient for Team of value1
       cur_graph.append("linearGradient")
