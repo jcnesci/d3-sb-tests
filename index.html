@@ -57,8 +57,8 @@
   </head>
   <body>
 
-    <div id="graph_container_1" class="graph_container"><h1># Tweets</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
-    <div id="graph_container_2" class="graph_container"><h1>Positive Mentions</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
+    <div id="graph_container_1" class="graph_container"><h1># Tweets / hour</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
+    <div id="graph_container_2" class="graph_container"><h1>Positive Mentions / hour</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
     <div id="graph_container_3" class="graph_container"><h1>Confidence</h1><p><span class="broncos">Broncos</span> vs <span class="chiefs">Chiefs</span><br/> Sunday November 17th</p></div>
 
   <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -194,14 +194,12 @@
         d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
       ]);
 
-      // ----------------------------- DATASET IN FRONT -----------------------------
-      
       // define fill gradient for Team of value1
       cur_graph.append("linearGradient")
         .attr("id", "first-gradient")
         .attr("gradientUnits", "userSpaceOnUse")
         .attr("x1", 0).attr("y1", y(0))
-        .attr("x2", 0).attr("y2", y( d3.max(data, function(d) { return d[front_dataset]; }) ))
+        .attr("x2", 0).attr("y2", y( d3.max(data, function(d) { return d.value1; }) ))
       .selectAll("stop")
         .data([
           {offset: "0%", color: "white"},
@@ -211,6 +209,23 @@
         .attr("offset", function(d) { return d.offset; })
         .attr("stop-color", function(d) { return d.color; });
 
+      // define fill gradient for Team of value2
+      cur_graph.append("linearGradient")
+        .attr("id", "second-gradient")
+        .attr("gradientUnits", "userSpaceOnUse")
+        .attr("x1", 0).attr("y1", y(0))
+        .attr("x2", 0).attr("y2", y( d3.max(data, function(d) { return d.value2; }) ))
+      .selectAll("stop")
+        .data([
+          {offset: "0%", color: "white"},
+          {offset: "50%", color: "#C60C30"}
+        ])
+      .enter().append("stop")
+        .attr("offset", function(d) { return d.offset; })
+        .attr("stop-color", function(d) { return d.color; });
+
+      // ----------------------------- DATASET IN FRONT -----------------------------
+      
       var area = d3.svg.area()
         .x(function(d) { return x(d.time); })
         .y0(height)
@@ -227,21 +242,6 @@
 
       // ----------------------------- DATASET IN BACK -----------------------------
       
-      // define fill gradient for Team of value2
-      cur_graph.append("linearGradient")
-        .attr("id", "second-gradient")
-        .attr("gradientUnits", "userSpaceOnUse")
-        .attr("x1", 0).attr("y1", y(0))
-        .attr("x2", 0).attr("y2", y( d3.max(data, function(d) { return d[back_dataset]; }) ))
-      .selectAll("stop")
-        .data([
-          {offset: "0%", color: "white"},
-          {offset: "50%", color: "#C60C30"}
-        ])
-      .enter().append("stop")
-        .attr("offset", function(d) { return d.offset; })
-        .attr("stop-color", function(d) { return d.color; });
-
       var area = d3.svg.area()
         .x(function(d) { return x(d.time); })
         .y0(height)
