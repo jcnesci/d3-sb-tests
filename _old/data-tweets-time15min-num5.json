@@ -1,0 +1,14 @@
+{
+"question":"game",
+"type":"tweets",
+"afc":[{"value":69,"time":[2013,10,18,1,0,null]},
+	{"value":983,"time":[2013,10,18,0,3,null]},
+	{"value":1634,"time":[2013,10,18,0,2,null]},
+	{"value":4249,"time":[2013,10,18,0,1,null]},
+	{"value":10729,"time":[2013,10,18,0,0,null]}],
+"nfc":[{"value":37,"time":[2013,10,18,1,0,null]},
+	{"value":467,"time":[2013,10,18,0,3,null]},
+	{"value":823,"time":[2013,10,18,0,2,null]},
+	{"value":1834,"time":[2013,10,18,0,1,null]},
+	{"value":4338,"time":[2013,10,18,0,0,null]}]
+}

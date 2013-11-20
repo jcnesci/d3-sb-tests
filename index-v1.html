@@ -115,27 +115,44 @@
       // Setup the moving average calculation.
       // Currently is a hacky way of doing it by manually storing and using the previous 3 values for averaging.
       // Looking for another way to address previous values so we can make the averaging window much larger (like 15 previous values).
-      var _movingSum;
       var prevPrevVal = 0;
       var prevVal = 0;
+      var curVal = 0
       var movingAverageLine = d3.svg.line()
       .x(function(d,i) { return x(d.key); })
       .y(function(d,i) {
           if (i == 0) {
               prevPrevVal  = y(d.value);
               prevVal = y(d.value);
-              return y(d.value);
+              curVal =  y(d.value);
           } else if (i == 1) {
               prevPrevVal = prevVal;
-              prevVal = y(d.value);
-              return prevVal/2.0 + y(d.value)/2.0;
+              prevVal = curVal;
+              curVal = (prevVal + y(d.value)) / 2.0;
           } else {
               prevPrevVal = prevVal;
-              prevVal = y(d.value);
-            return prevPrevVal/3.0 + prevVal/3.0 + y(d.value)/3.0
+              prevVal = curVal;
+              curVal = (prevPrevVal + prevVal + y(d.value)) / 3.0;
           }
+          return curVal;
       })
       .interpolate("basis");
+      // .y(function(d,i) {
+      //     if (i == 0) {
+      //         prevPrevVal  = y(d.value);
+      //         prevVal = y(d.value);
+      //         return y(d.value);
+      //     } else if (i == 1) {
+      //         prevPrevVal = prevVal;
+      //         prevVal = y(d.value);
+      //         return prevVal/2.0 + y(d.value)/2.0;
+      //     } else {
+      //         prevPrevVal = prevVal;
+      //         prevVal = y(d.value);
+      //       return prevPrevVal/3.0 + prevVal/3.0 + y(d.value)/3.0
+      //     }
+      // })
+      // .interpolate("basis");
       // .interpolate("bundle");          // looks like delayed moving-average but who knows what it's doing
       // .interpolate("step-before");     // makes a bar graph=looking step-graph
       
@@ -200,7 +217,6 @@
       // Setup the moving average calculation.
       // Currently is a hacky way of doing it by manually storing and using the previous 3 values for averaging.
       // Looking for another way to address previous values so we can make the averaging window much larger (like 15 previous values).
-      var _movingSum;
       var prevPrevVal = 0;
       var prevVal = 0;
       var movingAverageLine = d3.svg.line()
