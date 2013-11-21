@@ -8,50 +8,6 @@
         font: 10px sans-serif;
         color: black;
       }
-      .graph_container {
-        /*position: relative;*/
-        margin: 0 auto;
-        width: 1800px;
-      }
-      .column1{
-        float: left;
-        width: 550px;
-      }
-      .column2{
-        margin-left: 75px;
-        float: left;
-        width: 550px;
-      }
-      .column3{
-        /*margin-left: 50px;*/
-        float: right;
-        width: 550px;
-      }
-      .graph{
-        margin-top:50px;
-        margin-bottom:50px;
-      }
-      .axis path,
-      .axis line {
-        fill: none;
-        stroke: #CCC;
-        shape-rendering: crispEdges;
-      }
-      .axis-text {
-        color: red;
-      }
-      .area_value1 {
-        /*fill: url(#first-gradient);*/
-        fill: #FF6319;
-        stroke-width: 0px;
-        opacity: 0.6;
-      }
-      .area_value2 {
-        /*fill: url(#second-gradient);*/
-        fill: #C60C30;
-        stroke-width: 0px;
-        opacity: 0.6;
-      }
       h1 {
         text-transform: uppercase;
         font-size: 5em;
@@ -82,6 +38,65 @@
       span.broncos {
         color: #FF6319;
       }
+      .graph_container {
+        /*position: relative;*/
+        margin: 0 auto;
+        width: 1800px;
+      }
+      .column1{
+        float: left;
+        width: 550px;
+      }
+      .column2{
+        margin-left: 75px;
+        float: left;
+        width: 550px;
+      }
+      .column3{
+        /*margin-left: 50px;*/
+        float: right;
+        width: 550px;
+      }
+      .entire_row{
+        float: left;
+        /*margin: 0 auto;*/
+        width: 550px;
+      }
+      .graph{
+        margin-top:50px;
+        margin-bottom:50px;
+      }
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #CCC;
+        shape-rendering: crispEdges;
+      }
+      .axis-text {
+        color: red;
+      }
+      .area_value1 {
+        /*fill: url(#first-gradient);*/
+        fill: #FF6319;
+        stroke-width: 0px;
+        opacity: 0.6;
+      }
+      .area_value2 {
+        /*fill: url(#second-gradient);*/
+        fill: #C60C30;
+        stroke-width: 0px;
+        opacity: 0.6;
+      }
+      .line1 {
+        fill: none;
+        stroke: #FF6319;
+        stroke-width: 1.5px;
+      }
+      .line2 {
+        fill: none;
+        stroke: #C60C30;
+        stroke-width: 1.5px;
+      }
     </style>
   </head>
   <body>
@@ -99,15 +114,16 @@
         <div id="graph_container_5" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
         <div id="graph_container_6" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
       </div>
-       <div class="column3">
+      <div class="column3">
         <h1>Per Minute<br /> - Smoothed</h1>
         <div id="graph_container_7" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
         <div id="graph_container_8" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
         <div id="graph_container_9" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
       </div>
-      <div class="column1">
-        <h1>Game Data</h1>
-        <div id="graph_container_10" class="graph"><h2>Score</h2><p>manually collected</p></div>
+      <div class="column1"><div class="graph"></div></div>
+      <div class="column2">
+        <h1>Game Data<br /> - Score</h1>
+        <div id="graph_container_10" class="graph"><p>manually collected</p></div>
       </div>
     </div>
     
@@ -300,60 +316,48 @@
     });
 
     // - - - - - - - - - - - - - COLUMN 4 : game data
-    // Graph 10 : Score during the game
-    d3.json("game-v2.json", function(error, data) {                            // manually collected data
-      console.log("- - - - - - - - - - - - - - - - - - #10 ORIGINAL DATA : ")
-      console.log(data);
-
-      var parseDate3 = d3.time.format("%M,%S").parse;
-      
-      data = data.game;
-      console.log(data.child);
-      console.log(data.denver);
-      console.log(data.kansas);
-      data.denver.forEach(function(d) {
-        d.time = parseDate3(String(d.time));
-        d.score = +d.score;
-        console.log(d.time);
-        console.log(d.score);
+    // Graph 10 : Score during the game. Completely different style from the other charts, so here all is custom and self-contained.
+    d3.tsv("game.tsv", function(error, data) {                            // manually collected data
+      // console.log("- - - - - - - - - - - - - - - - - - #10 ORIGINAL DATA : ")
+      // console.log(data);
+      var parseDateFormat3 = d3.time.format("%M,%S").parse;
+      // Data parsing.
+      data.forEach(function(d) {
+        d.time = parseDateFormat3(d.time);
+        d["denver"] = +d["denver"];
+        d["kansas"] = +d["kansas"];
+        // console.log(d.time);
+        // console.log(d["denver"]);
+        // console.log(d["kansas"]);
       });  
-      data.kansas.forEach(function(d) {
-        d.time = parseDate3(String(d.time));
-        d.score = +d.score;
-        console.log(d.time);
-        console.log(d.score);
-      });  
-      
-
-      var line1 = d3.svg.area()
-        .interpolate("step-before")
-        .x(function(d) { return x(d.denver.time); })
-        .y(function(d) { return y(d.denver.score); });
-      var line2 = d3.svg.area()
-        .interpolate("step-before")
-        .x(function(d) { return x(d.kansas.time); })
-        .y(function(d) { return y(d.kansas.score); });
-      
-      x.domain([0, 60]);
+      // Domains.
+      x.domain(d3.extent(data, function(d) { return d.time; }));
       y.domain([0,
-        d3.max(data, function(d) { return Math.max(d.denver.score, d.kansas.score); })
+        d3.max(data, function(d) { return Math.max(d["denver"], d["kansas"]); })
       ]);
-
+      // Draw the lines.
+      var line1 = d3.svg.line()
+        .interpolate("step-after")
+        .x(function(d) { return x(d.time); })
+        .y(function(d) { return y(d["denver"]); });
+      var line2 = d3.svg.line()
+        .interpolate("step-after")
+        .x(function(d) { return x(d.time); })
+        .y(function(d) { return y(d["kansas"]); });
+      graph10.datum(data);                              // why is this necessary?
       graph10.append("path")
-        .attr("class", "line")
+        .attr("class", "line1")
         .attr("d", line1);
       graph10.append("path")
-        .attr("class", "line")
+        .attr("class", "line2")
         .attr("d", line2);
-      
       // Draw the X-axis of the graph.
-      cur_graph.append("g")
+      graph10.append("g")
           .attr("class", "x axis")
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis);
-
       // Draw the Y-axis of the graph.
-      cur_graph.append("g")
+      graph10.append("g")
           .attr("class", "y axis")
           .call(yAxis)
         .append("text")
@@ -363,10 +367,8 @@
           .style("text-anchor", "end")
           .attr("class", "axis-text")
           .text("value");
-
     });
-
-
+    
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Functions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     // Preprocess the raw data in order to have rows that contain: time, AFC value, NFC value.
@@ -571,8 +573,6 @@
 
     }
 
-
-        
   </script>
   
   </body>
