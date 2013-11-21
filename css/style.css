@@ -95,7 +95,7 @@ span.broncos {
   /*stroke: #C60C30;*/
   /*opacity: 0.9;*/
 
-  fill: url(#diagonalHatch_value2);
+  fill: url(#pattern-image);
   opacity: 0.2;
 }
 .line1 {

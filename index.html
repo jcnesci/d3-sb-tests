@@ -328,6 +328,19 @@
       //     .attr("height", 100)
       //     .attr('fill', 'url(#diagonalHatch)');
 
+      cur_graph
+        .append('defs')
+        .append('pattern')
+          .attr('id', 'pattern-image')
+          .attr('patternUnits', 'userSpaceOnUse')
+          .attr('width', 20)
+          .attr('height', 20)
+        .append('svg:image')
+          .attr('width', 20)
+          .attr('height', 20)
+          .attr('xlink:href', 'img/pattern-1.gif');
+
+
       // ----------------------------- DATASET IN FRONT -----------------------------
       
       // create area SVG object
