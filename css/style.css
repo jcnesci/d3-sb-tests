@@ -1,0 +1,104 @@
+body {
+  font: 10px sans-serif;
+  color: black;
+}
+h1 {
+  text-transform: uppercase;
+  font-size: 5em;
+  background-color: black;
+  color: white;
+  padding-left: 10px;
+}
+h2 {
+  text-transform: uppercase;
+  font-size: 3em;
+  line-height: 0.3em;
+}
+p {
+  font-size: 12px;
+  font-weight: normal;
+}
+p.title {
+  font-size: 2em;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: black;
+  color: white;
+  padding: 20px;
+}
+span.chiefs {
+  color: #C60C30;
+}
+span.broncos {
+  color: #FF6319;
+}
+.graph_container {
+  /*position: relative;*/
+  margin: 0 auto;
+  width: 1800px;
+}
+.column1{
+  float: left;
+  width: 550px;
+}
+.column2{
+  margin-left: 75px;
+  float: left;
+  width: 550px;
+}
+.column3{
+  /*margin-left: 50px;*/
+  float: right;
+  width: 550px;
+}
+.entire_row{
+  float: left;
+  /*margin: 0 auto;*/
+  width: 550px;
+}
+.graph{
+  margin-top:50px;
+  margin-bottom:50px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #CCC;
+  shape-rendering: crispEdges;
+}
+.axis-text {
+  color: red;
+}
+.area_value1 {
+  stroke-width: 2px;
+  /*fill: url(#first-gradient);*/
+
+  fill: #FF6319;
+  opacity: 0.5;
+
+  /*fill:#ff7c33;*/
+  /*stroke: #FF6319;*/
+  /*opacity: 0.9;*/
+}
+.area_value2 {
+  stroke-width: 2px;
+  
+  /*fill: url(#second-gradient);*/
+
+  fill: #C60C30;
+  opacity: 0.5;
+  
+  /*fill:#ec414a;*/
+  /*stroke: #C60C30;*/
+  /*opacity: 0.9;*/
+}
+.line1 {
+  fill: none;
+  stroke: #FF6319;
+  stroke-width: 2px;
+}
+.line2 {
+  fill: none;
+  stroke: #C60C30;
+  stroke-width: 2px;
+}
