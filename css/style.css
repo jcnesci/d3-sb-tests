@@ -73,32 +73,38 @@ span.broncos {
   stroke-width: 2px;
   /*fill: url(#first-gradient);*/
 
-  fill: #FF6319;
-  opacity: 0.5;
+  /*fill: #FF6319;*/
+  /*opacity: 0.5;*/
 
   /*fill:#ff7c33;*/
   /*stroke: #FF6319;*/
   /*opacity: 0.9;*/
+
+  fill: url(#diagonalHatch_value1);
+  opacity: 0.2;
 }
 .area_value2 {
   stroke-width: 2px;
   
   /*fill: url(#second-gradient);*/
 
-  fill: #C60C30;
-  opacity: 0.5;
+  /*fill: #C60C30;*/
+  /*opacity: 0.5;*/
   
   /*fill:#ec414a;*/
   /*stroke: #C60C30;*/
   /*opacity: 0.9;*/
+
+  fill: url(#diagonalHatch_value2);
+  opacity: 0.2;
 }
 .line1 {
   fill: none;
   stroke: #FF6319;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 .line2 {
   fill: none;
   stroke: #C60C30;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
