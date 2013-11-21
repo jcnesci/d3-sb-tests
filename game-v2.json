@@ -1,0 +1,19 @@
+{"game":[
+	{"denver":[
+		{"time":[2,22],"goal_type":"FG","score":3},
+		{"time":[11,53],"goal_type":"TD","score":9},
+		{"time":[11,53],"goal_type":"FG","score":10},
+		{"time":[20,51],"goal_type":"TD","score":16},
+		{"time":[20,51],"goal_type":"FG","score":17},
+		{"time":[42,32],"goal_type":"TD","score":23},
+		{"time":[42,32],"goal_type":"FG","score":24},
+		{"time":[52,50],"goal_type":"FG","score":27}
+	]},
+	{"kansas":[
+		{"time":[16,32],"goal_type":"TD","score":6},
+		{"time":[16,32],"goal_type":"FG","score":7},
+		{"time":[27,2],"goal_type":"FG","score":10},
+		{"time":[54,58],"goal_type":"TD","score":16},
+		{"time":[54,58],"goal_type":"FG","score":17}
+	]}
+]}

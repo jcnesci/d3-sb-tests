@@ -105,7 +105,12 @@
         <div id="graph_container_8" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
         <div id="graph_container_9" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
       </div>
+      <div class="column1">
+        <h1>Game Data</h1>
+        <div id="graph_container_10" class="graph"><h2>Score</h2><p>manually collected</p></div>
+      </div>
     </div>
+    
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script type="text/javascript" charset="utf-8">
     
@@ -187,6 +192,12 @@
         .attr("top", 100)
       .append("g")                                // "g" is a SVG group element for applying properties to many objects at once.
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var graph10 = d3.select("#graph_container_10").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("top", 100)
+      .append("g")                                // "g" is a SVG group element for applying properties to many objects at once.
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     // Create our new data array for storing properly formatted data for D3.
     var data;           
 
@@ -261,32 +272,100 @@
     // Graph 7 : Tweets
     // d3.json("data-nov7chiefsbroncos-tweets-timemin-num1440.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Tweet data instead, from Chiefs VS Broncos on November 17.
     d3.json("http://97.107.131.209:4577/game/tweets?time=min&num=1440", function(error, json_data) {                         // LIVE DATA
-      console.log("- - - - - - - - - - - - - - - - - - #4 ORIGINAL DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #7 ORIGINAL DATA : ")
       console.log(json_data);
       format_raw_data(json_data, graph7, "value1", "value2", 2, 3);
-      console.log("- - - - - - - - - - - - - - - - - - #4 D3-FORMATTED DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #7 D3-FORMATTED DATA : ")
       console.log(data);
     });
     
     // Graph 8 : Positivity
     d3.json("data-nov7chiefsbroncos-pos-timemin-num1440.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Positivity data instead, from Chiefs VS Broncos on November 17.
     // d3.json("http://97.107.131.209:4577/game/pos?time=min&num=1440", function(error, json_data) {                          // LIVE DATA : TODO - live data is broken right now because it doesn't return perfect value pairs. We must handle that error here, at the moment. But right now we're just using manually pruned data in a local file.
-      console.log("- - - - - - - - - - - - - - - - - - #5 ORIGINAL DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #8 ORIGINAL DATA : ")
       console.log(json_data);
       format_raw_data(json_data, graph8, "value1", "value2", 2, 3);
-      console.log("- - - - - - - - - - - - - - - - - - #5 D3-FORMATTED DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #8 D3-FORMATTED DATA : ")
       console.log(data);
     });
 
     // Graph 9 : Confidence
     // d3.json("data-nov7chiefsbroncos-confidence-timemin-num1440.json", function(error, json_data) {                            // RECORDED DATA : use this recorded Confidence data instead, from Chiefs VS Broncos on November 17.
     d3.json("http://97.107.131.209:4577/game/confidence?time=min&num=1440", function(error, json_data) {                         // LIVE DATA
-      console.log("- - - - - - - - - - - - - - - - - - #6 ORIGINAL DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #9 ORIGINAL DATA : ")
       console.log(json_data);
       format_raw_data(json_data, graph9, "value1", "value2", 2, 3);
-      console.log("- - - - - - - - - - - - - - - - - - #6 D3-FORMATTED DATA : ")
+      console.log("- - - - - - - - - - - - - - - - - - #9 D3-FORMATTED DATA : ")
       console.log(data);
-    });    
+    });
+
+    // - - - - - - - - - - - - - COLUMN 4 : game data
+    // Graph 10 : Score during the game
+    d3.json("game-v2.json", function(error, data) {                            // manually collected data
+      console.log("- - - - - - - - - - - - - - - - - - #10 ORIGINAL DATA : ")
+      console.log(data);
+
+      var parseDate3 = d3.time.format("%M,%S").parse;
+      
+      data = data.game;
+      console.log(data.child);
+      console.log(data.denver);
+      console.log(data.kansas);
+      data.denver.forEach(function(d) {
+        d.time = parseDate3(String(d.time));
+        d.score = +d.score;
+        console.log(d.time);
+        console.log(d.score);
+      });  
+      data.kansas.forEach(function(d) {
+        d.time = parseDate3(String(d.time));
+        d.score = +d.score;
+        console.log(d.time);
+        console.log(d.score);
+      });  
+      
+
+      var line1 = d3.svg.area()
+        .interpolate("step-before")
+        .x(function(d) { return x(d.denver.time); })
+        .y(function(d) { return y(d.denver.score); });
+      var line2 = d3.svg.area()
+        .interpolate("step-before")
+        .x(function(d) { return x(d.kansas.time); })
+        .y(function(d) { return y(d.kansas.score); });
+      
+      x.domain([0, 60]);
+      y.domain([0,
+        d3.max(data, function(d) { return Math.max(d.denver.score, d.kansas.score); })
+      ]);
+
+      graph10.append("path")
+        .attr("class", "line")
+        .attr("d", line1);
+      graph10.append("path")
+        .attr("class", "line")
+        .attr("d", line2);
+      
+      // Draw the X-axis of the graph.
+      cur_graph.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      // Draw the Y-axis of the graph.
+      cur_graph.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .attr("class", "axis-text")
+          .text("value");
+
+    });
+
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Functions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -331,9 +410,9 @@
     function moving_window_average(array, steps) {
 
       return array.map(function (_, index) {
-        console.log("------------------ i : "+ index);
-        console.log("BEFORE: _ = ");
-        console.log(_);
+        // console.log("------------------ i : "+ index);
+        // console.log("BEFORE: _ = ");
+        // console.log(_);
         // console.log("value1 = "+ _["value1"]);
 
         // make array of just values in window around current element
@@ -365,8 +444,8 @@
         _["value1"] = result_value1;
         _["value2"] = result_value2;
         
-        console.log("AFTER: _ = ");
-        console.log(_);
+        // console.log("AFTER: _ = ");
+        // console.log(_);
         return _;
 
         // console.log("result = "+ result);  
