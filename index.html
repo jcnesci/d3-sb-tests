@@ -14,25 +14,28 @@
         <div id="graph_container_2" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=hour&num=24</p></div>
         <div id="graph_container_3" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=hour&num=24</p></div>
         <div id="graph_container_4" class="graph"><h2>Confidence</h2><p>/game/confidence?time=hour&num=24</p></div>
+        <div id="graph_container_5" class="graph"><h2>Pos/Pos+Neg</h2><p>custom calculation</p></div>
       </div>
       <div class="column2">
         <h1>Per Minute<br /> - Raw</h1>
-        <div id="graph_container_5" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
-        <div id="graph_container_6" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
-        <div id="graph_container_7" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=1440</p></div>
-        <div id="graph_container_8" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
+        <div id="graph_container_6" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
+        <div id="graph_container_7" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
+        <div id="graph_container_8" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=1440</p></div>
+        <div id="graph_container_9" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
+        <div id="graph_container_10" class="graph"><h2>Pos/Pos+Neg</h2><p>custom calculation</p></div>
       </div>
       <div class="column3">
         <h1>Per Minute<br /> - Smoothed</h1>
-        <div id="graph_container_9" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
-        <div id="graph_container_10" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
-        <div id="graph_container_11" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=1440</p></div>
-        <div id="graph_container_12" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
+        <div id="graph_container_11" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
+        <div id="graph_container_12" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
+        <div id="graph_container_13" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=1440</p></div>
+        <div id="graph_container_14" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
+        <div id="graph_container_15" class="graph"><h2>Pos/Pos+Neg</h2><p>custom calculation</p></div>
       </div>
       <div class="column1">
         <h1>Game Data<br /> - Score</h1>
-        <div id="graph_container_13" class="graph"><p>manually collected</p></div>
-        <div id="graph_container_14" class="graph"><h2>Pos/Pos+Neg</h2><p>custom data aggregation</p></div>
+        <div id="graph_container_16" class="graph"><p>manually collected</p></div>
+        
       </div>
     </div>
     
@@ -73,16 +76,18 @@
                         ["http://97.107.131.209:4577/game/pos?time=hour&num=24", "value1", "value2", 1],
                         ["http://97.107.131.209:4577/game/neg?time=hour&num=24", "value1", "value2", 1],
                         ["http://97.107.131.209:4577/game/confidence?time=hour&num=24", "value2", "value1", 1],
+                        ["pos/pos+neg"],
                         ["http://97.107.131.209:4577/game/tweets?time=min&num=1440", "value1", "value2", 2],
                         ["data/data-nov7chiefsbroncos-pos-timemin-num1440.json", "value1", "value2", 2],                  // using a data file, because the live data didn't have an equal number of data points for both AFC and NFC. The data is a modified version of the live data to fix that.
                         ["http://97.107.131.209:4577/game/neg?time=min&num=1440", "value1", "value2", 2],
                         ["http://97.107.131.209:4577/game/confidence?time=min&num=1440", "value1", "value2", 2],
+                        ["pos/pos+neg"],
                         ["http://97.107.131.209:4577/game/tweets?time=min&num=1440", "value1", "value2", 2, 3],
                         ["data/data-nov7chiefsbroncos-pos-timemin-num1440.json", "value1", "value2", 2, 3],               // using a data file, because the live data didn't have an equal number of data points for both AFC and NFC. The data is a modified version of the live data to fix that.
                         ["http://97.107.131.209:4577/game/neg?time=min&num=1440", "value1", "value2", 2, 3],
                         ["http://97.107.131.209:4577/game/confidence?time=min&num=1440", "value1", "value2", 2, 3],
-                        ["data/game.tsv"],                                                                                 // this is a manully created file, with data put together from scores on the web.
-                        ["pos/pos+neg"]
+                        ["pos/pos+neg"],
+                        ["data/game.tsv"]                                                                                 // this is a manully created file, with data put together from scores on the web.
                       ];
     
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Init - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -111,8 +116,8 @@
         // Using a function/closure to localize "i" (and giving it another name, "this_i") so that "i" doesn't always end-up being the last index of the loop.
         (function(this_i){      //"localizing" i by using it in the inner function
           
-          if (charts_data[this_i][0] === "data/game.tsv") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
-          else if (charts_data[this_i][0] === "pos/pos+neg") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
+          if (charts_data[this_i][0] === "data/game.tsv" || charts_data[this_i][0] === "pos/pos+neg") { create_special_chart(this_i); }
+          // else if (charts_data[this_i][0] === "pos/pos+neg") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
           else {
             d3.json(charts_data[this_i][0], function(error, json_data) {
               // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" ORIGINAL DATA : ")
@@ -128,45 +133,46 @@
     }
 
     // for charts that are exceptions, we have custom treatment here.
-    function create_special_chart(chart_data_url, chart) {
+    // function create_special_chart(chart_data_url, chart) {
+    function create_special_chart(chart_id) {
+
+      // console.log("*** *** *** *** ID = "+ chart_id )
+      var cur_chart_url = charts_data[chart_id][0];
 
       // special chart that displays an alternate kind of "confidence" : pos / (pos + neg).
-      if (chart_data_url === "pos/pos+neg") {
+      if (cur_chart_url === "pos/pos+neg") {
+        
         // get pos data
         d3.json("http://97.107.131.209:4577/game/pos?time=hour&num=24", function(error, json_data_pos) {
           // get neg data
           d3.json("http://97.107.131.209:4577/game/neg?time=hour&num=24", function(error, json_data_neg) {
-            
-            console.log("* * * * * * json_data_pos")
-            console.log(json_data_pos);
-            console.log("* * * * * * json_data_neg")
-            console.log(json_data_neg);
+            // console.log("* * * * * * json_data_pos")
+            // console.log(json_data_pos);
+            // console.log("* * * * * * json_data_neg")
+            // console.log(json_data_neg);
 
-
-            var data_pos_over_pos_plus_neg = {};
-            data_pos_over_pos_plus_neg["afc"] = [];
-            data_pos_over_pos_plus_neg["nfc"] = [];
+            var data_pos_over_pos_plus_neg = {};                                        // parent object for both AFC's pos/pos+neg and NFC's pos/pos+neg arrays
+            data_pos_over_pos_plus_neg["afc"] = [];                                     // array for AFC's pos/pos+neg
+            data_pos_over_pos_plus_neg["nfc"] = [];                                     // array for NFC's pos/pos+neg
             data_pos_over_pos_plus_neg["afc"].length = json_data_pos.afc.length;        // TODO: right now, we assume both POS and NEG raw data arrays are same length, need to add extra handling for that later.
             data_pos_over_pos_plus_neg["nfc"].length = json_data_pos.afc.length;        // TODO: right now, we assume both POS and NEG raw data arrays are same length, need to add extra handling for that later.
             
             // Calculate AFC's (pos / pos+neg).
+            // Get pos data.
             // console.log("AFC POS DATA - - - - - - - ")
             json_data_pos.afc.map(function (cur_row, index) {
               // format pos data
               cur_row.time.splice(4);                             // remove last two units (15min, min) so parse format works.
-              // cur_row.time = parseDateFormat1(String(cur_row.time));
-              // cur_row.value = +cur_row.value;
               // then copy current pos value into the combined pos+neg array
               data_pos_over_pos_plus_neg["afc"][index] = {};                      // initialize this object
               data_pos_over_pos_plus_neg["afc"][index].time = cur_row.time;
               data_pos_over_pos_plus_neg["afc"][index].value = cur_row.value;
             });
+            // Get neg data.
             // console.log("AFC NEG DATA - - - - - - - ")
             json_data_neg.afc.map(function (cur_row, index) {
               // format neg data
               cur_row.time.splice(4);                             // remove last two units (15min, min) so parse format works.
-              // cur_row.time = parseDateFormat1(String(cur_row.time));
-              // cur_row.value = +cur_row.value;
               // then add current neg value to the pos value already in the combined pos+neg array
               var pos = data_pos_over_pos_plus_neg["afc"][index].value;
               var pos_plus_neg = pos + cur_row.value;
@@ -176,23 +182,21 @@
               // console.log("t--- data_pos_over_pos_plus_neg[index].value = " + data_pos_over_pos_plus_neg[index].value)
             });
             // Calculate NFC's (pos / pos+neg).
+            // Get pos data.
             // console.log("NFC POS DATA - - - - - - - ")
             json_data_pos.nfc.map(function (cur_row, index) {
               // format pos data
               cur_row.time.splice(4);                             // remove last two units (15min, min) so parse format works.
-              // cur_row.time = parseDateFormat1(String(cur_row.time));
-              // cur_row.value = +cur_row.value;
               // then copy current pos value into the combined pos+neg array
               data_pos_over_pos_plus_neg["nfc"][index] = {};                      // initialize this object
               data_pos_over_pos_plus_neg["nfc"][index].time = cur_row.time;
               data_pos_over_pos_plus_neg["nfc"][index].value = cur_row.value;
             });
+            // Get pos data.
             // console.log("NFC NEG DATA - - - - - - - ")
             json_data_neg.nfc.map(function (cur_row, index) {
               // format neg data
               cur_row.time.splice(4);                             // remove last two units (15min, min) so parse format works.
-              // cur_row.time = parseDateFormat1(String(cur_row.time));
-              // cur_row.value = +cur_row.value;
               // then add current neg value to the pos value already in the combined pos+neg array
               var pos = data_pos_over_pos_plus_neg["nfc"][index].value;
               var pos_plus_neg = pos + cur_row.value;
@@ -201,24 +205,20 @@
               // console.log("t--- pos_plus_neg = " + pos_plus_neg)
               // console.log("t--- data_pos_over_pos_plus_neg[index].value = " + data_pos_over_pos_plus_neg[index].value)
             });
-            console.log("data_pos_over_pos_plus_neg DATA - - - - - - - ");
-            console.log(data_pos_over_pos_plus_neg);
+            // console.log("data_pos_over_pos_plus_neg DATA - - - - - - - ");
+            // console.log(data_pos_over_pos_plus_neg);
 
-            
-
-
-
-
-
+            // send object of AFC and NFC data to formatting and chart drawing.
+            format_raw_data(data_pos_over_pos_plus_neg, charts[chart_id], "value1", "value2", 1); 
           });
-          // format_raw_data(json_data, charts[this_i], charts_data[this_i][1], charts_data[this_i][2], charts_data[this_i][3], charts_data[this_i][4]); 
-          // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" D3-FORMATTED DATA : ")
-          // console.log(data);
         });
       }
       // special chart that displays game scoring data of November 17, Chiefs VS Broncos.
-      if (chart_data_url === "data/game.tsv") {
-        d3.tsv(chart_data_url, function(error, data) {                            // manually collected data
+      if (cur_chart_url === "data/game.tsv") {
+        
+        var cur_chart = charts[chart_id];
+
+        d3.tsv(cur_chart_url, function(error, data) {                            // manually collected data
 
           var parseDateFormat3 = d3.time.format("%M,%S").parse;
           // Data parsing.
@@ -244,20 +244,20 @@
             .interpolate("step-after")
             .x(function(d) { return x(d.time); })
             .y(function(d) { return y(d["kansas"]); });
-          chart.datum(data);                              // why is this necessary?
-          chart.append("path")
+          cur_chart.datum(data);                              // why is this necessary?
+          cur_chart.append("path")
             .attr("class", "special_line1")
             .attr("d", line1);
-          chart.append("path")
+          cur_chart.append("path")
             .attr("class", "special_line2")
             .attr("d", line2);
           // Draw the X-axis of the graph.
-          chart.append("g")
+          cur_chart.append("g")
               .attr("class", "x axis")
               .attr("transform", "translate(0," + height + ")")
               .call(xAxis);
           // Draw the Y-axis of the graph.
-          chart.append("g")
+          cur_chart.append("g")
               .attr("class", "y axis")
               .call(yAxis)
             .append("text")
