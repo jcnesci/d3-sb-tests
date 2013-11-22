@@ -133,12 +133,20 @@
       if (chart_data_url === "pos/pos+neg") {
         // ["http://97.107.131.209:4577/game/pos?time=hour&num=24", "value1", "value2", 1],
         // ["http://97.107.131.209:4577/game/neg?time=hour&num=24", "value1", "value2", 1],
-        
-        // d3.json("http://97.107.131.209:4577/game/pos?time=hour&num=24", function(error, json_data) {
-        //   format_raw_data(json_data, charts[this_i], charts_data[this_i][1], charts_data[this_i][2], charts_data[this_i][3], charts_data[this_i][4]); 
-        //   // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" D3-FORMATTED DATA : ")
-        //   // console.log(data);
-        // });
+
+        d3.json("http://97.107.131.209:4577/game/pos?time=hour&num=24", function(error, json_data_pos) {
+          
+          d3.json("http://97.107.131.209:4577/game/neg?time=hour&num=24", function(error, json_data_neg) {
+
+            console.log("* * * * * * json_data_pos")
+            console.log(json_data_pos);
+            console.log("* * * * * * json_data_neg")
+            console.log(json_data_neg);
+          });
+          // format_raw_data(json_data, charts[this_i], charts_data[this_i][1], charts_data[this_i][2], charts_data[this_i][3], charts_data[this_i][4]); 
+          // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" D3-FORMATTED DATA : ")
+          // console.log(data);
+        });
       }
       if (chart_data_url === "data/game.tsv") {
         d3.tsv(chart_data_url, function(error, data) {                            // manually collected data

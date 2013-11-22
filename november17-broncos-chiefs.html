@@ -280,7 +280,7 @@
       // set the X and Y domains
       x.domain(d3.extent(data, function(d) { return d.time; }));
       // EXCEPTION: the Per Hour/Confidence chart has a minor exception to lower the origin of the Y domain, to make it more legible.
-      if (cur_graph !== charts[3]) {
+      if (cur_graph !== charts[2]) {
         y.domain([
           d3.min(data, function(d) { return Math.min(d.value1, d.value2); }),
           d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
