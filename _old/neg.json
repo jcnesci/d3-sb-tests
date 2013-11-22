@@ -1,0 +1,11 @@
+{"question":"game","type":"neg",
+"afc":[
+{"value":211,"time":[2013,10,22,13,null,null]},
+{"value":332,"time":[2013,10,22,12,null,null]},
+{"value":298,"time":[2013,10,22,11,null,null]},
+{"value":85,"time":[2013,10,22,10,null,null]}],
+"nfc":[
+{"value":393,"time":[2013,10,22,13,null,null]},
+{"value":523,"time":[2013,10,22,12,null,null]},
+{"value":623,"time":[2013,10,22,11,null,null]},
+{"value":261,"time":[2013,10,22,10,null,null]}]}
