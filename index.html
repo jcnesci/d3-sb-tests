@@ -12,23 +12,27 @@
         <h1>Per Hour<br /> - Raw</h1>
         <div id="graph_container_1" class="graph"><h2># Tweets</h2><p>/game/tweets?time=hour&num=24</p></div>
         <div id="graph_container_2" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=hour&num=24</p></div>
-        <div id="graph_container_3" class="graph"><h2>Confidence</h2><p>/game/confidence?time=hour&num=24</p></div>
+        <div id="graph_container_3" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=hour&num=24</p></div>
+        <div id="graph_container_4" class="graph"><h2>Confidence</h2><p>/game/confidence?time=hour&num=24</p></div>
       </div>
       <div class="column2">
         <h1>Per Minute<br /> - Raw</h1>
-        <div id="graph_container_4" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
-        <div id="graph_container_5" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
-        <div id="graph_container_6" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
+        <div id="graph_container_5" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
+        <div id="graph_container_6" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
+        <div id="graph_container_7" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=1440</p></div>
+        <div id="graph_container_8" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
       </div>
       <div class="column3">
         <h1>Per Minute<br /> - Smoothed</h1>
-        <div id="graph_container_7" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
-        <div id="graph_container_8" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
-        <div id="graph_container_9" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
+        <div id="graph_container_9" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=1440</p></div>
+        <div id="graph_container_10" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=1440</p></div>
+        <div id="graph_container_11" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=1440</p></div>
+        <div id="graph_container_12" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=1440</p></div>
       </div>
       <div class="column1">
         <h1>Game Data<br /> - Score</h1>
-        <div id="graph_container_10" class="graph"><p>manually collected</p></div>
+        <div id="graph_container_13" class="graph"><p>manually collected</p></div>
+        <!-- <div id="graph_container_14" class="graph"><h2>Pos/Pos+Neg</h2><p>custom data aggregation</p></div> -->
       </div>
     </div>
     
@@ -39,8 +43,8 @@
 
     // Vars for all charts size.
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 550 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
+        width = 300 - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
     // Our Date parsing formats.
     // TODO: right now the way we handle different data streams is by ignorning whole unit measures (ie. 15 minutes, single minutes) instead of treating individual null values. Need to improve code.
     // We have different parsing formats depending on the type of data: daily, hourly, by minute, etc.
@@ -67,14 +71,18 @@
     var charts_data = [ 
                         ["http://97.107.131.209:4577/game/tweets?time=hour&num=24", "value1", "value2", 1],
                         ["http://97.107.131.209:4577/game/pos?time=hour&num=24", "value1", "value2", 1],
+                        ["http://97.107.131.209:4577/game/neg?time=hour&num=24", "value1", "value2", 1],
                         ["http://97.107.131.209:4577/game/confidence?time=hour&num=24", "value2", "value1", 1],
                         ["http://97.107.131.209:4577/game/tweets?time=min&num=1440", "value1", "value2", 2],
                         ["data/data-nov7chiefsbroncos-pos-timemin-num1440.json", "value1", "value2", 2],                  // using a data file, because the live data didn't have an equal number of data points for both AFC and NFC. The data is a modified version of the live data to fix that.
+                        ["http://97.107.131.209:4577/game/neg?time=min&num=1440", "value1", "value2", 2],
                         ["http://97.107.131.209:4577/game/confidence?time=min&num=1440", "value1", "value2", 2],
                         ["http://97.107.131.209:4577/game/tweets?time=min&num=1440", "value1", "value2", 2, 3],
                         ["data/data-nov7chiefsbroncos-pos-timemin-num1440.json", "value1", "value2", 2, 3],               // using a data file, because the live data didn't have an equal number of data points for both AFC and NFC. The data is a modified version of the live data to fix that.
+                        ["http://97.107.131.209:4577/game/neg?time=min&num=1440", "value1", "value2", 2, 3],
                         ["http://97.107.131.209:4577/game/confidence?time=min&num=1440", "value1", "value2", 2, 3],
-                        ["data/game.tsv"]                                                                                 // this is a manully created file, with data put together from scores on the web.
+                        ["data/game.tsv"],                                                                                 // this is a manully created file, with data put together from scores on the web.
+                        ["pos/pos+neg"]
                       ];
     
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Init - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -103,7 +111,9 @@
         // Using a function/closure to localize "i" (and giving it another name, "this_i") so that "i" doesn't always end-up being the last index of the loop.
         (function(this_i){      //"localizing" i by using it in the inner function
           
-          if (charts_data[this_i][0] !== "data/game.tsv") { 
+          if (charts_data[this_i][0] === "data/game.tsv") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
+          else if (charts_data[this_i][0] === "pos/pos+neg") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
+          else {
             d3.json(charts_data[this_i][0], function(error, json_data) {
               // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" ORIGINAL DATA : ")
               // console.log(json_data);
@@ -111,8 +121,8 @@
               // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" D3-FORMATTED DATA : ")
               // console.log(data);
             });
-          } else { create_special_chart(charts_data[this_i][0], charts[this_i]); }
-
+          }
+          
         }(i));    //pass in our "i" from the loop
       }
     }
@@ -120,6 +130,9 @@
     // for charts that are exceptions, we have custom treatment here.
     function create_special_chart(chart_data_url, chart) {
       
+      if (chart_data_url === "pos/pos+neg") {
+        console.log("GOOD PLACE!!")
+      }
       if (chart_data_url === "data/game.tsv") {
         d3.tsv(chart_data_url, function(error, data) {                            // manually collected data
 
@@ -149,10 +162,10 @@
             .y(function(d) { return y(d["kansas"]); });
           chart.datum(data);                              // why is this necessary?
           chart.append("path")
-            .attr("class", "line1")
+            .attr("class", "special_line1")
             .attr("d", line1);
           chart.append("path")
-            .attr("class", "line2")
+            .attr("class", "special_line2")
             .attr("d", line2);
           // Draw the X-axis of the graph.
           chart.append("g")
@@ -278,8 +291,8 @@
 
       // set the X and Y domains
       x.domain(d3.extent(data, function(d) { return d.time; }));
-      // EXCEPTION: the 3rd chart has a minor exception to lower the origin of the Y domain.
-      if (cur_graph !== charts[2]) {
+      // EXCEPTION: the Per Hour/Confidence chart has a minor exception to lower the origin of the Y domain, to make it more legible.
+      if (cur_graph !== charts[3]) {
         y.domain([
           d3.min(data, function(d) { return Math.min(d.value1, d.value2); }),
           d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
@@ -292,6 +305,7 @@
       }
       // console.log("t- * * * * * * * * * * * * * * * * * * The MAX Y value = "+ d3.max(data, function(d) { return Math.max(d.value1, d.value2); }));
 
+      // pattern using line path.
       cur_graph
         .append('defs')
         .append('pattern')
@@ -303,7 +317,7 @@
           .attr('d', 'M-1,3 l2,2 M0,0 l4,4 M3,-1 l2,2')
           .attr('stroke', '#FF6319')
           .attr('stroke-width', 2);
-
+      // pattern using line path.
       cur_graph
         .append('defs')
         .append('pattern')
@@ -315,19 +329,7 @@
           .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
           .attr('stroke', '#C60C30')
           .attr('stroke-width', 2);
-
-      // svg.append("rect")
-      //       .attr("x", 0)
-      //       .attr("width", 100)
-      //       .attr("height", 100)
-      //       .style("fill", 'yellow');
-
-      // svg.append("rect")
-      //     .attr("x", 0)
-      //     .attr("width", 100)
-      //     .attr("height", 100)
-      //     .attr('fill', 'url(#diagonalHatch)');
-
+      // pattern using GIF image.
       cur_graph
         .append('defs')
         .append('pattern')
@@ -339,7 +341,6 @@
           .attr('width', 20)
           .attr('height', 20)
           .attr('xlink:href', 'img/pattern-1.gif');
-
 
       // ----------------------------- DATASET IN FRONT -----------------------------
       
@@ -356,15 +357,15 @@
         .datum(data)
         .attr("class", "area_" + front_dataset)
         .attr("d", area);
-      // create line SVG object
-      var line = d3.svg.line()
-        .x(function(d) { return x(d.time); })
-        .y(function(d) { return y(d[front_dataset]); });
-      // draw the line on the chart
-      cur_graph.append("path")
-        .datum(data)
-        .attr("class", "line1")
-        .attr("d", line);
+      // // create line SVG object
+      // var line = d3.svg.line()
+      //   .x(function(d) { return x(d.time); })
+      //   .y(function(d) { return y(d[front_dataset]); });
+      // // draw the line on the chart
+      // cur_graph.append("path")
+      //   .datum(data)
+      //   .attr("class", "line1")
+      //   .attr("d", line);
 
       // ----------------------------- DATASET IN BACK -----------------------------
       
@@ -381,15 +382,15 @@
           .datum(data)
           .attr("class", "area_" + back_dataset)
           .attr("d", area);
-      // create line SVG object
-      var line = d3.svg.line()
-        .x(function(d) { return x(d.time); })
-        .y(function(d) { return y(d[back_dataset]); });
-      // draw the line on the chart
-      cur_graph.append("path")
-        .datum(data)
-        .attr("class", "line2")
-        .attr("d", line);
+      // // create line SVG object
+      // var line = d3.svg.line()
+      //   .x(function(d) { return x(d.time); })
+      //   .y(function(d) { return y(d[back_dataset]); });
+      // // draw the line on the chart
+      // cur_graph.append("path")
+      //   .datum(data)
+      //   .attr("class", "line2")
+      //   .attr("d", line);
 
       // ---------------------------------------------------------------------------
 
