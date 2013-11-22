@@ -76,17 +76,17 @@
                         ["http://97.107.131.209:4577/game/pos?time=hour&num=24", "value1", "value2", 1],
                         ["http://97.107.131.209:4577/game/neg?time=hour&num=24", "value1", "value2", 1],
                         ["http://97.107.131.209:4577/game/confidence?time=hour&num=24", "value2", "value1", 1],
-                        ["pos/pos+neg"],
+                        ["pos/pos+neg_1", "value1", "value2", 1],
                         ["http://97.107.131.209:4577/game/tweets?time=min&num=1440", "value1", "value2", 2],
                         ["data/data-nov7chiefsbroncos-pos-timemin-num1440.json", "value1", "value2", 2],                  // using a data file, because the live data didn't have an equal number of data points for both AFC and NFC. The data is a modified version of the live data to fix that.
                         ["http://97.107.131.209:4577/game/neg?time=min&num=1440", "value1", "value2", 2],
                         ["http://97.107.131.209:4577/game/confidence?time=min&num=1440", "value1", "value2", 2],
-                        ["pos/pos+neg"],
+                        ["pos/pos+neg_2", "value1", "value2", 2],
                         ["http://97.107.131.209:4577/game/tweets?time=min&num=1440", "value1", "value2", 2, 3],
                         ["data/data-nov7chiefsbroncos-pos-timemin-num1440.json", "value1", "value2", 2, 3],               // using a data file, because the live data didn't have an equal number of data points for both AFC and NFC. The data is a modified version of the live data to fix that.
                         ["http://97.107.131.209:4577/game/neg?time=min&num=1440", "value1", "value2", 2, 3],
                         ["http://97.107.131.209:4577/game/confidence?time=min&num=1440", "value1", "value2", 2, 3],
-                        ["pos/pos+neg"],
+                        ["pos/pos+neg_2", "value1", "value2", 2, 3],
                         ["data/game.tsv"]                                                                                 // this is a manully created file, with data put together from scores on the web.
                       ];
     
@@ -116,8 +116,7 @@
         // Using a function/closure to localize "i" (and giving it another name, "this_i") so that "i" doesn't always end-up being the last index of the loop.
         (function(this_i){      //"localizing" i by using it in the inner function
           
-          if (charts_data[this_i][0] === "data/game.tsv" || charts_data[this_i][0] === "pos/pos+neg") { create_special_chart(this_i); }
-          // else if (charts_data[this_i][0] === "pos/pos+neg") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
+          if (charts_data[this_i][0] === "data/game.tsv" || charts_data[this_i][0] === "pos/pos+neg_1" || charts_data[this_i][0] === "pos/pos+neg_2") { create_special_chart(this_i); }
           else {
             d3.json(charts_data[this_i][0], function(error, json_data) {
               // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" ORIGINAL DATA : ")
@@ -140,12 +139,17 @@
       var cur_chart_url = charts_data[chart_id][0];
 
       // special chart that displays an alternate kind of "confidence" : pos / (pos + neg).
-      if (cur_chart_url === "pos/pos+neg") {
+      if (cur_chart_url === "pos/pos+neg_1" || cur_chart_url === "pos/pos+neg_2") {
         
+        // set data urls depending on the type specified in charts_data.
+        var pos_url, neg_url;
+        if (cur_chart_url === "pos/pos+neg_1") { pos_url = "http://97.107.131.209:4577/game/pos?time=hour&num=24"; neg_url = "http://97.107.131.209:4577/game/neg?time=hour&num=24" }
+        else if (cur_chart_url === "pos/pos+neg_2") { pos_url = "http://97.107.131.209:4577/game/pos?time=min&num=1440"; neg_url = "http://97.107.131.209:4577/game/neg?time=min&num=1440" }
+
         // get pos data
-        d3.json("http://97.107.131.209:4577/game/pos?time=hour&num=24", function(error, json_data_pos) {
+        d3.json(pos_url, function(error, json_data_pos) {
           // get neg data
-          d3.json("http://97.107.131.209:4577/game/neg?time=hour&num=24", function(error, json_data_neg) {
+          d3.json(neg_url, function(error, json_data_neg) {
             // console.log("* * * * * * json_data_pos")
             // console.log(json_data_pos);
             // console.log("* * * * * * json_data_neg")
@@ -205,11 +209,11 @@
               // console.log("t--- pos_plus_neg = " + pos_plus_neg)
               // console.log("t--- data_pos_over_pos_plus_neg[index].value = " + data_pos_over_pos_plus_neg[index].value)
             });
-            // console.log("data_pos_over_pos_plus_neg DATA - - - - - - - ");
-            // console.log(data_pos_over_pos_plus_neg);
+            console.log("data_pos_over_pos_plus_neg DATA - - - - - - - ");
+            console.log(data_pos_over_pos_plus_neg);
 
             // send object of AFC and NFC data to formatting and chart drawing.
-            format_raw_data(data_pos_over_pos_plus_neg, charts[chart_id], "value1", "value2", 1); 
+            format_raw_data(data_pos_over_pos_plus_neg, charts[chart_id], charts_data[chart_id][1], charts_data[chart_id][2], charts_data[chart_id][3], charts_data[chart_id][4]); 
           });
         });
       }
