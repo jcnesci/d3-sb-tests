@@ -22,9 +22,9 @@ p.title {
   font-size: 2em;
   font-weight: bold;
   text-transform: uppercase;
-  background-color: white;
-  border: 1px black solid;
-  color: black;
+  background-color: #CCC;
+  /*border: 1px black solid;*/
+  color: white;
   padding: 10px;
 }
 span.chiefs {
