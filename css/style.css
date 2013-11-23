@@ -22,12 +22,16 @@ p.title {
   font-size: 2em;
   font-weight: bold;
   text-transform: uppercase;
-  background-color: black;
-  color: white;
+  background-color: white;
+  border: 1px black solid;
+  color: black;
   padding: 10px;
 }
 span.chiefs {
   color: #C60C30;
+}
+span.patriots {
+  color: #0D254C;
 }
 span.broncos {
   color: #FF6319;
@@ -105,14 +109,49 @@ span.broncos {
   /*fill: url(#diagonalHatch_value2);*/
   /*opacity: 0.2;*/
 }
-.line1 {
+
+
+
+.area_afc {
+  /*fill: url(#first-gradient);*/
+  /*---*/
+  /*fill:#ff7c33;*/
+  /*stroke: #FF6319;*/
+  /*opacity: 0.9;*/
+  /*---*/
+  /*fill: url(#pattern-image);*/
+  /*---*/
+  /*fill: url(#diagonalHatch_value1);*/
+  /*opacity: 0.2;*/
+  /*---*/
+  stroke-width: 0px;
+  fill: #FF6319;
+  opacity: 0.5;
+}
+.area_nfc {
+  /*fill: url(#second-gradient);*/
+  /*---*/
+  /*fill:#ec414a;*/
+  /*stroke: #C60C30;*/
+  /*opacity: 0.9;*/
+  /*---*/
+  /*fill: url(#pattern-image);*/
+  /*---*/
+  /*fill: url(#diagonalHatch_value2);*/
+  /*opacity: 0.2;*/
+  /*---*/
+  stroke-width: 0px;
+  fill: #0D254C;
+  opacity: 0.5;
+}
+.line_afc {
   fill: none;
   stroke: #FF6319;
   stroke-width: 1px;
 }
-.line2 {
+.line_nfc {
   fill: none;
-  stroke: #C60C30;
+  stroke: #0D254C;
   stroke-width: 1px;
 }
 .special_line1 {
