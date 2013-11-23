@@ -49,7 +49,7 @@
         width = 300 - margin.left - margin.right,
         height = 200 - margin.top - margin.bottom;
     // Our Date parsing formats.
-    // TODO: right now the way we handle different data streams is by ignorning whole unit measures (ie. 15 minutes, single minutes) instead of treating individual null values. Need to improve code.
+    // TODO: right now the way we handle different data streams is by ignorning whole unit measures (ie. 15 minutes, single minutes) instead of treating individual null values. Need to add handling for that.
     // We have different parsing formats depending on the type of data: daily, hourly, by minute, etc.
     var parseDateFormat1 = d3.time.format("%Y,%m,%d,%H").parse;             // For data per hour. "%-" means it ignores padding, removing the need for zero-padding perhaps?
     var parseDateFormat2 = d3.time.format("%Y,%m,%d,%H,%M").parse;          // For data per minute.
@@ -69,7 +69,7 @@
     var data;           
     // to store all chart SVG objects
     var charts = [];    
-    // for each chart, this array contains : [0] = the data url, [1] = the desired front dataset (value 1 (AFC) or value 2 (NFC)), [2] = the desired back dataset (value 1 or value 2), [3] = the parse format, (optional)[4] = the smoothing amount.
+    // for each chart, this array contains : [0] = the data url, [1] = the desired front dataset (the AFC team or NFC team), [2] = the desired back dataset (AFC or NFC), [3] = the parse format, (optional)[4] = the smoothing amount.
     // some data urls are the live API, some are backed-up data files.
     var charts_data = [ 
                         ["http://97.107.131.209:4577/game/tweets?time=hour&num=24", "nfc", "afc", 1],
@@ -132,10 +132,7 @@
     }
 
     // for charts that are exceptions, we have custom treatment here.
-    // function create_special_chart(chart_data_url, chart) {
     function create_special_chart(chart_id) {
-
-      // console.log("*** *** *** *** ID = "+ chart_id )
       var cur_chart_url = charts_data[chart_id][0];
 
       // special chart that displays an alternate kind of "confidence" : pos / (pos + neg).
@@ -158,9 +155,9 @@
             var data_pos_over_pos_plus_neg = {};                                        // parent object for both AFC's pos/pos+neg and NFC's pos/pos+neg arrays
             data_pos_over_pos_plus_neg["afc"] = [];                                     // array for AFC's pos/pos+neg
             data_pos_over_pos_plus_neg["nfc"] = [];                                     // array for NFC's pos/pos+neg
-            data_pos_over_pos_plus_neg["afc"].length = json_data_pos.afc.length;        // TODO: right now, we assume both POS and NEG raw data arrays are same length, need to add extra handling for that later.
-            data_pos_over_pos_plus_neg["nfc"].length = json_data_pos.afc.length;        // TODO: right now, we assume both POS and NEG raw data arrays are same length, need to add extra handling for that later.
             
+            // TODO: make a compact loop that to encapsulate all these map functions below.
+
             // Calculate AFC's (pos / pos+neg).
             // Get pos data.
             // console.log("AFC POS DATA - - - - - - - ")
@@ -211,7 +208,6 @@
       }
       // special chart that displays game scoring data of November 17, Chiefs VS Broncos.
       if (cur_chart_url === "data/game.tsv") {
-        
         var cur_chart = charts[chart_id];
 
         d3.tsv(cur_chart_url, function(error, data) {                            // manually collected data
@@ -222,9 +218,6 @@
             d.time = parseDateFormat3(d.time);
             d["denver"] = +d["denver"];
             d["kansas"] = +d["kansas"];
-            // console.log(d.time);
-            // console.log(d["denver"]);
-            // console.log(d["kansas"]);
           });  
           // Domains.
           x.domain(d3.extent(data, function(d) { return d.time; }));
@@ -270,9 +263,7 @@
     // Preprocess the raw data in order to have rows that contain: time, AFC value, NFC value.
     function format_raw_data(raw_data, cur_graph, front_team, back_team, parse_format, smoothing_amount) {
       data = {};      // clear data array
-      // var front_dataset = [];
-      // var back_dataset = [];
-
+      
       // TODO: shorten code by formatting AFC and NFC in a loop of some sort.
 
       // AFC ----------------------------------------------------
@@ -292,6 +283,7 @@
       data.afc = raw_data.afc.slice();
       // console.log("1 * * * * * * * * * * AFC data = ")
       // console.log(data.afc)
+      
       // apply moving-average smoothing, if specified
       if (smoothing_amount !== undefined) {
         data.afc = moving_window_average(data.afc, smoothing_amount);
@@ -299,9 +291,6 @@
       // console.log("2 * * * * * * * * * * AFC data = ")
       // console.log(data.afc)
 
-      // draw this in front
-      // draw_chart(cur_graph, front_dataset, parse_format);
-      
       // NFC ----------------------------------------------------
       // rip out data from the AFC object to populate our new data array (since the AFC and NFC objects have the same structure, we can use either one for building our new array).
       raw_data.nfc.map(function (cur_row, index) {
@@ -319,6 +308,7 @@
       data.nfc = raw_data.nfc.slice();
       // console.log("1 * * * * * * * * * * NFC data = ")
       // console.log(data.nfc)
+      
       // apply moving-average smoothing, if specified
       if (smoothing_amount !== undefined) {
         data.nfc = moving_window_average(data.nfc, smoothing_amount);
@@ -326,73 +316,9 @@
       // console.log("2 * * * * * * * * * * NFC data = ")
       // console.log(data.nfc)
 
-      // draw this in back
+      // draw chart for these 2 teams.
       draw_chart(cur_graph, front_team, back_team, parse_format);
-
-
-
-
-
-
-
-      // - - - - - 
-
-      // //  draw one chart with both datasets.
-      // if (front_team === "value1" && back_team === "value2") {
-      //   front_dataset = raw_data.afc.slice();
-      //   back_dataset = raw_data.nfc.slice();
-      // } else if (front_team === "value2" && back_team === "value1") {
-      //   front_dataset = raw_data.nfc.slice();
-      //   back_dataset = raw_data.afc.slice();
-      // }
-      // console.log("2 * * * * * * * * * * front_dataset = ")
-      // console.log(front_dataset)
-      // console.log("2 * * * * * * * * * * back_dataset = ")
-      // console.log(back_dataset)
-      // draw_chart(cur_graph, front_dataset, back_dataset, parse_format);
-
     }
-
-
-    // ORIG --------------------------------------------------------------------------------------------------------
-    // // Preprocess the raw data in order to have rows that contain: time, AFC value, NFC value.
-    // function format_raw_data(raw_data, cur_graph, front_dataset, back_dataset, parse_format, smoothing_amount) {
-    //   data = [];      // clear data array
-
-    //   // first, check if AFC and NFC have same length
-    //   if (raw_data.afc.length === raw_data.nfc.length) {
-    //     console.log("m- AFC and NFC arrays are same length. Continue to preprocessing the D3-ready data array.");
-
-    //     // rip out data from the AFC object to populate our new data array (since the AFC and NFC objects have the same structure, we can use either one for building our new array).
-    //     raw_data.afc.map(function (cur_row, index) {
-    //       // console.log(cur_row);
-    //       // console.log(cur_row.time[4]);
-    //       if (parse_format === 1) {
-    //         cur_row.time.splice(4);                                     // TODO: removes the last 2 units for now : the 15-minute and single minute units. Eventually we need to handle them.
-    //       } else if (parse_format === 2) {
-    //         cur_row.time.splice(4, 1);                                  // TODO: remove the 15 minute unit but keep the single minutes, for this time format.
-    //       }
-
-    //       var new_row = {};                                             // use an object/associative array to store the 3 values of a new row
-    //       new_row["time"] = cur_row.time;                               // store the time
-    //       new_row["value1"] = cur_row.value;                            // store the AFC value as "value1"
-    //       new_row["value2"] = raw_data.nfc[index].value;                // store the related NFC value (at the same current index position) as "value2"
-    //       data.push( new_row );                                         // push the 3 values as a single row, to the new D3 data array
-    //       // console.log(data);
-    //     });
-        
-    //     // apply moving-average smoothing, if specified
-    //     if (smoothing_amount !== undefined) {
-    //       moving_window_average(data, smoothing_amount);
-    //     }
-    //     draw_chart(cur_graph, front_dataset, back_dataset, parse_format);
-
-    //   } else {
-    //     console.log("m- ************* PROBLEM ************* Original AFC and NFC arrays not same length : "+ cur_graph.node().parentNode.parentNode.getAttribute("id"))
-    //     console.log("m- ************* PROBLEM ************* raw_data.afc.length = "+ raw_data.afc.length)
-    //     console.log("m- ************* PROBLEM ************* raw_data.nfc.length = "+ raw_data.nfc.length)
-    //   }
-    // }
 
     // Average our JSON data array. The steps param determines the size of the averaging window (steps is the number of data points we use on each side of our current data point).
     function moving_window_average(array, steps) {
@@ -442,78 +368,9 @@
       return averaged_array;
     }
 
-    // ORIG --------------------------------------------------------------------------------------------------------
-    // // rebuild our JSON data array: replace original value1 and value2 values with new averaged ones. The steps param determines size of averaging window (steps is the number of data points we average with on each side of our current data point).
-    // function moving_window_average(array, steps) {
-
-    //   return array.map(function (cur_row, index) {
-    //     // console.log("------------------ i : "+ index);
-    //     // console.log("BEFORE: cur_row = ");
-    //     // console.log(cur_row);
-
-    //     // make array of just values in window around current element
-    //     var cur_window = array.slice(index - steps, index + steps + 1);
-        
-    //     // filter to get only value1 properties
-    //     var cur_window_value1 = cur_window.map( function(element){ 
-    //       var all_values = d3.values(element);
-    //       return all_values[1]; 
-    //     } );
-    //     // average them into one value
-    //     var result_value1 = (d3.sum(cur_window_value1) / cur_window_value1.length);
-    //     if (isNaN(result_value1)) { result_value1 = cur_row["value1"]; }      // for edge values that return bad numbers, use the original number.
-    //     // console.log("cur_window_value1 = ");
-    //     // console.log(cur_window_value1);
-
-    //     // filter to get only value2 properties
-    //     var cur_window_value2 = cur_window.map( function(element){ 
-    //       var all_values = d3.values(element);
-    //       return all_values[2]; 
-    //     } );
-    //     // average them into one value
-    //     var result_value2 = (d3.sum(cur_window_value2) / cur_window_value2.length);
-    //     if (isNaN(result_value2)) { result_value2 = cur_row["value2"]; }      // for edge values that return bad numbers, use the original number.
-    //     // console.log("cur_window_value2 = ");
-    //     // console.log(cur_window_value2);
-        
-    //     // put new averaged values back into the original array.
-    //     cur_row["value1"] = result_value1;
-    //     cur_row["value2"] = result_value2;
-        
-    //     // console.log("AFTER: cur_row = ");
-    //     // console.log(cur_row);
-    //     return cur_row;
-
-    //     // console.log("result = "+ result);  
-    //     // return result;
-    //   });
-    // }
-
-
     // draw the graphs/charts
     function draw_chart(cur_graph, front_team, back_team, parse_format) {
-
-      console.log("t- draw_chart - cur_graph = "+cur_graph +" | front_team = "+ front_team +" | back_team = "+ back_team);
-
-      // Setup each row of data by formatting the Date for X, and by converting to a number for Y.
-      // console.log("t--------- DATA:")
-      // console.log(data)
-      // data.forEach(function(d) {
-      //   // console.log("time PRE = "+ String(d.time));
-      //   if (parse_format === 1) {
-      //     d.time = parseDateFormat1(String(d.time));         // "time" is X value.
-      //   } else if (parse_format === 2) {
-      //     d.time = parseDateFormat2(String(d.time));
-      //   }
-      //   d.value1 = +d.value1;                       // "value" is Y value. "+" converts the value to a number (not a string).
-      //   d.value2 = +d.value2;
-      //   // console.log("time POST = "+ String(d.time));
-      //   // console.log("value1 = "+ d.value1);
-      //   // console.log("value2 = "+ d.value2);
-      // });
-
-      // set the X and Y domains
-      // x.domain(d3.extent(data, function(d) { return d.time; }));
+      // console.log("t- draw_chart - cur_graph = "+cur_graph +" | front_team = "+ front_team +" | back_team = "+ back_team);
 
       //  get the single max & min values by looking at both datasets.
       x.domain([
@@ -525,20 +382,15 @@
         y.domain([
           Math.min(d3.min(data.afc, function(d) { return d.value; }), d3.min(data.nfc, function(d) { return d.value; })),
           Math.max(d3.max(data.afc, function(d) { return d.value; }), d3.max(data.nfc, function(d) { return d.value; }))
-          // d3.min(data, function(d) { return Math.min(d.value1, d.value2); }),
-          // d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
         ]);
       } else {
         y.domain([
           Math.min(d3.min(data.afc, function(d) { return d.value; }), d3.min(data.nfc, function(d) { return d.value; })) / 1.3,
           Math.max(d3.max(data.afc, function(d) { return d.value; }), d3.max(data.nfc, function(d) { return d.value; }))
-          // d3.min(data, function(d) { return Math.min(d.value1, d.value2)/1.3; }),
-          // d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
         ]);
       }
-      // console.log("t- * * * * * * * * * * * * * * * * * * The MAX Y value = "+ d3.max(data, function(d) { return Math.max(d.value1, d.value2); }));
-
-      // // pattern using line path.
+      
+      // // Unused: pattern using line path.
       // cur_graph
       //   .append('defs')
       //   .append('pattern')
@@ -550,7 +402,7 @@
       //     .attr('d', 'M-1,3 l2,2 M0,0 l4,4 M3,-1 l2,2')
       //     .attr('stroke', '#FF6319')
       //     .attr('stroke-width', 2);
-      // // pattern using line path.
+      // // Unused: pattern using line path.
       // cur_graph
       //   .append('defs')
       //   .append('pattern')
@@ -562,7 +414,7 @@
       //     .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
       //     .attr('stroke', '#C60C30')
       //     .attr('stroke-width', 2);
-      // // pattern using GIF image.
+      // // Unused: pattern using GIF image.
       // cur_graph
       //   .append('defs')
       //   .append('pattern')
@@ -578,7 +430,7 @@
       // ----------------------------- DATASET IN FRONT -----------------------------
       
       // TODO: make drawing the line an optional parameter.
-      // draw the line on the data points.
+      // Unused: draw the line on the data points.
       // var line = d3.svg.line()
       //   .x(function(d) { return x(d.time); })
       //   .y(function(d) { return y(d.value); });
@@ -603,7 +455,7 @@
       // ----------------------------- DATASET IN BACK -----------------------------
       
       // TODO: make drawing the line an optional parameter.
-      // draw the line on the data points.
+      // Unused: draw the line on the data points.
       // var line = d3.svg.line()
       //   .x(function(d) { return x(d.time); })
       //   .y(function(d) { return y(d.value); });
@@ -645,272 +497,6 @@
           .text("value");
 
     }
-
-
-    // //  OLD 1
-    // // draw the graphs/charts
-    // function draw_chart(cur_graph, dataset_type, parse_format) {
-
-    //   // Setup each row of data by formatting the Date for X, and by converting to a number for Y.
-    //   // console.log("t--------- DATA:")
-    //   // console.log(data)
-    //   data.forEach(function(d) {
-    //     // console.log("time PRE = "+ String(d.time));
-    //     if (parse_format === 1) {
-    //       d.time = parseDateFormat1(String(d.time));         // "time" is X value.
-    //     } else if (parse_format === 2) {
-    //       d.time = parseDateFormat2(String(d.time));
-    //     }
-    //     d.value = +d.value;                       // "value" is Y value. "+" converts the value to a number (not a string).
-    //     // console.log("time POST = "+ String(d.time));
-    //     // console.log("value = "+ d.value);
-    //   });
-
-    //   // set the X and Y domains
-    //   x.domain(d3.extent(data, function(d) { return d.time; }));
-    //   // EXCEPTION: the Per Hour/Confidence chart has a minor exception to lower the origin of the Y domain, to make it more legible.
-    //   if (cur_graph !== charts[3]) {
-    //     y.domain([
-    //       d3.min(data, function(d) { return d.value; }),
-    //       d3.max(data, function(d) { return d.value; })
-    //     ]);
-    //   } else {
-    //     y.domain([
-    //       d3.min(data, function(d) { return d.value/1.3; }),
-           
-    //     ]);
-    //   }
-
-    //   // // pattern using line path.
-    //   // cur_graph
-    //   //   .append('defs')
-    //   //   .append('pattern')
-    //   //     .attr('id', 'diagonalHatch_value1')
-    //   //     .attr('patternUnits', 'userSpaceOnUse')
-    //   //     .attr('width', 4)
-    //   //     .attr('height', 4)
-    //   //   .append('path')
-    //   //     .attr('d', 'M-1,3 l2,2 M0,0 l4,4 M3,-1 l2,2')
-    //   //     .attr('stroke', '#FF6319')
-    //   //     .attr('stroke-width', 2);
-    //   // // pattern using line path.
-    //   // cur_graph
-    //   //   .append('defs')
-    //   //   .append('pattern')
-    //   //     .attr('id', 'diagonalHatch_value2')
-    //   //     .attr('patternUnits', 'userSpaceOnUse')
-    //   //     .attr('width', 4)
-    //   //     .attr('height', 4)
-    //   //   .append('path')
-    //   //     .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
-    //   //     .attr('stroke', '#C60C30')
-    //   //     .attr('stroke-width', 2);
-    //   // // pattern using GIF image.
-    //   // cur_graph
-    //   //   .append('defs')
-    //   //   .append('pattern')
-    //   //     .attr('id', 'pattern-image')
-    //   //     .attr('patternUnits', 'userSpaceOnUse')
-    //   //     .attr('width', 20)
-    //   //     .attr('height', 20)
-    //   //   .append('svg:image')
-    //   //     .attr('width', 20)
-    //   //     .attr('height', 20)
-    //   //     .attr('xlink:href', 'img/pattern-1.gif');
-
-    //   // ----------------------------- DATASET -----------------------------
-      
-    //   // create area SVG object
-    //   var area = d3.svg.area()
-    //     .x(function(d) { return x(d.time); })
-    //     .y0(height)
-    //     .y1(function(d,i) {
-    //       return y(d.value);
-    //   })
-    //   .interpolate("linear");
-    //   // draw the area on the chart
-    //   cur_graph.append("path")
-    //     .datum(data)
-    //     .attr("class", "area_" + dataset_type)
-    //     .attr("d", area);
-    //   // // create line SVG object
-    //   // var line = d3.svg.line()
-    //   //   .x(function(d) { return x(d.time); })
-    //   //   .y(function(d) { return y(d[dataset_type]); });
-    //   // // draw the line on the chart
-    //   // cur_graph.append("path")
-    //   //   .datum(data)
-    //   //   .attr("class", "line1")
-    //   //   .attr("d", line);
-
-    //   // ---------------------------------------------------------------------------
-
-    //   // Draw the X-axis of the graph.
-    //   cur_graph.append("g")
-    //       .attr("class", "x axis")
-    //       .attr("transform", "translate(0," + height + ")")
-    //       .call(xAxis);
-
-    //   // Draw the Y-axis of the graph.
-    //   cur_graph.append("g")
-    //       .attr("class", "y axis")
-    //       .call(yAxis)
-    //     .append("text")
-    //       .attr("transform", "rotate(-90)")
-    //       .attr("y", 6)
-    //       .attr("dy", ".71em")
-    //       .style("text-anchor", "end")
-    //       .attr("class", "axis-text")
-    //       .text("value");
-
-    // }
-
-
-    //  ORIGINAL 
-    // // draw the graphs/charts
-    // function draw_chart(cur_graph, front_dataset, back_dataset, parse_format) {
-
-    //   // Setup each row of data by formatting the Date for X, and by converting to a number for Y.
-    //   // console.log("t--------- DATA:")
-    //   // console.log(data)
-    //   data.forEach(function(d) {
-    //     // console.log("time PRE = "+ String(d.time));
-    //     if (parse_format === 1) {
-    //       d.time = parseDateFormat1(String(d.time));         // "time" is X value.
-    //     } else if (parse_format === 2) {
-    //       d.time = parseDateFormat2(String(d.time));
-    //     }
-    //     d.value1 = +d.value1;                       // "value" is Y value. "+" converts the value to a number (not a string).
-    //     d.value2 = +d.value2;
-    //     // console.log("time POST = "+ String(d.time));
-    //     // console.log("value1 = "+ d.value1);
-    //     // console.log("value2 = "+ d.value2);
-    //   });
-
-    //   // set the X and Y domains
-    //   x.domain(d3.extent(data, function(d) { return d.time; }));
-    //   // EXCEPTION: the Per Hour/Confidence chart has a minor exception to lower the origin of the Y domain, to make it more legible.
-    //   if (cur_graph !== charts[3]) {
-    //     y.domain([
-    //       d3.min(data, function(d) { return Math.min(d.value1, d.value2); }),
-    //       d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
-    //     ]);
-    //   } else {
-    //     y.domain([
-    //       d3.min(data, function(d) { return Math.min(d.value1, d.value2)/1.3; }),
-    //       d3.max(data, function(d) { return Math.max(d.value1, d.value2); })
-    //     ]);
-    //   }
-    //   // console.log("t- * * * * * * * * * * * * * * * * * * The MAX Y value = "+ d3.max(data, function(d) { return Math.max(d.value1, d.value2); }));
-
-    //   // pattern using line path.
-    //   cur_graph
-    //     .append('defs')
-    //     .append('pattern')
-    //       .attr('id', 'diagonalHatch_value1')
-    //       .attr('patternUnits', 'userSpaceOnUse')
-    //       .attr('width', 4)
-    //       .attr('height', 4)
-    //     .append('path')
-    //       .attr('d', 'M-1,3 l2,2 M0,0 l4,4 M3,-1 l2,2')
-    //       .attr('stroke', '#FF6319')
-    //       .attr('stroke-width', 2);
-    //   // pattern using line path.
-    //   cur_graph
-    //     .append('defs')
-    //     .append('pattern')
-    //       .attr('id', 'diagonalHatch_value2')
-    //       .attr('patternUnits', 'userSpaceOnUse')
-    //       .attr('width', 4)
-    //       .attr('height', 4)
-    //     .append('path')
-    //       .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
-    //       .attr('stroke', '#C60C30')
-    //       .attr('stroke-width', 2);
-    //   // pattern using GIF image.
-    //   cur_graph
-    //     .append('defs')
-    //     .append('pattern')
-    //       .attr('id', 'pattern-image')
-    //       .attr('patternUnits', 'userSpaceOnUse')
-    //       .attr('width', 20)
-    //       .attr('height', 20)
-    //     .append('svg:image')
-    //       .attr('width', 20)
-    //       .attr('height', 20)
-    //       .attr('xlink:href', 'img/pattern-1.gif');
-
-    //   // ----------------------------- DATASET IN FRONT -----------------------------
-      
-    //   // create area SVG object
-    //   var area = d3.svg.area()
-    //     .x(function(d) { return x(d.time); })
-    //     .y0(height)
-    //     .y1(function(d,i) {
-    //       return y(d[front_dataset]);
-    //   })
-    //   .interpolate("linear");
-    //   // draw the area on the chart
-    //   cur_graph.append("path")
-    //     .datum(data)
-    //     .attr("class", "area_" + front_dataset)
-    //     .attr("d", area);
-    //   // // create line SVG object
-    //   // var line = d3.svg.line()
-    //   //   .x(function(d) { return x(d.time); })
-    //   //   .y(function(d) { return y(d[front_dataset]); });
-    //   // // draw the line on the chart
-    //   // cur_graph.append("path")
-    //   //   .datum(data)
-    //   //   .attr("class", "line1")
-    //   //   .attr("d", line);
-
-    //   // ----------------------------- DATASET IN BACK -----------------------------
-      
-    //   // create area SVG object
-    //   var area = d3.svg.area()
-    //     .x(function(d) { return x(d.time); })
-    //     .y0(height)
-    //     .y1(function(d,i) {
-    //       return y(d[back_dataset]);
-    //   })
-    //   .interpolate("linear");
-    //   // draw the area on the chart
-    //   cur_graph.append("path")
-    //       .datum(data)
-    //       .attr("class", "area_" + back_dataset)
-    //       .attr("d", area);
-    //   // // create line SVG object
-    //   // var line = d3.svg.line()
-    //   //   .x(function(d) { return x(d.time); })
-    //   //   .y(function(d) { return y(d[back_dataset]); });
-    //   // // draw the line on the chart
-    //   // cur_graph.append("path")
-    //   //   .datum(data)
-    //   //   .attr("class", "line2")
-    //   //   .attr("d", line);
-
-    //   // ---------------------------------------------------------------------------
-
-    //   // Draw the X-axis of the graph.
-    //   cur_graph.append("g")
-    //       .attr("class", "x axis")
-    //       .attr("transform", "translate(0," + height + ")")
-    //       .call(xAxis);
-
-    //   // Draw the Y-axis of the graph.
-    //   cur_graph.append("g")
-    //       .attr("class", "y axis")
-    //       .call(yAxis)
-    //     .append("text")
-    //       .attr("transform", "rotate(-90)")
-    //       .attr("y", 6)
-    //       .attr("dy", ".71em")
-    //       .style("text-anchor", "end")
-    //       .attr("class", "axis-text")
-    //       .text("value");
-
-    // }
 
   </script>
   
