@@ -33,9 +33,17 @@
         <div id="graph_container_15" class="graph"><h2>Pos/Pos+Neg</h2><p>custom calculation</p></div>
       </div>
       <div class="column1">
+        <h1>Custom chart<br /> &nbsp; </h1>
+        <div id="graph_container_17" class="graph">
+          <p> 
+            URL: <input type='text' id='input_url' />
+            <button type="button" class="input_button">Draw chart</button>
+          </p>
+        </div>
+      </div>
+      <div class="column2">
         <h1>Game Data<br /> - Score</h1>
         <div id="graph_container_16" class="graph"><p>T.B.D.</p></div>
-        
       </div>
     </div>
     
@@ -129,6 +137,22 @@
           
         }(i));    //pass in our "i" from the loop
       }
+
+      // add event handler for our custom input chart.
+      d3.select('button').on('click', function() {
+        create_input_chart();
+      });
+    }
+    
+    // 
+    function create_input_chart() {
+      var input_url = document.getElementById('input_url').value;
+      console.log("---- ---- ---- value = "+ input_url);
+      charts_data.push( [input_url, "afc", "nfc", 1] );
+      console.log("---- ---- ---- charts_data = ");
+      console.log(charts_data);
+      d3.selectAll(".graph").remove();
+      setup_charts(); // TODO: make it so it only draws current graph.
     }
 
     // for charts that are exceptions, we have custom treatment here.
@@ -450,7 +474,6 @@
         .datum(data[front_team])
         .attr("class", "area_" + front_team)
         .attr("d", area);
-      
 
       // ----------------------------- DATASET IN BACK -----------------------------
       
