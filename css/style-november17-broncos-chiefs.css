@@ -55,7 +55,7 @@ span.broncos {
 }
 .entire_row{
   float: left;
-  width: 1000px;
+  width: 300px;
 }
 .graph{
   margin-top:50px;
@@ -75,12 +75,11 @@ span.broncos {
 .axis-text {
   font-size: 1em;
 }
-.area_afc {
+.area_value1 {
   /*fill: url(#first-gradient);*/
   /*---*/
-  /*fill:#ff7c33;*/
+  fill:#ff7c33;
   /*stroke: #FF6319;*/
-  /*opacity: 0.9;*/
   /*---*/
   /*fill: url(#pattern-image);*/
   /*---*/
@@ -88,15 +87,13 @@ span.broncos {
   /*opacity: 0.2;*/
   /*---*/
   stroke-width: 0px;
-  fill: #FF6319;
   opacity: 0.5;
 }
-.area_nfc {
+.area_value2 {
   /*fill: url(#second-gradient);*/
   /*---*/
-  /*fill:#ec414a;*/
+  fill:#ec414a;
   /*stroke: #C60C30;*/
-  /*opacity: 0.9;*/
   /*---*/
   /*fill: url(#pattern-image);*/
   /*---*/
@@ -104,7 +101,6 @@ span.broncos {
   /*opacity: 0.2;*/
   /*---*/
   stroke-width: 0px;
-  fill: #0D254C;
   opacity: 0.5;
 }
 .line_afc {

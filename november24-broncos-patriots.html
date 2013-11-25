@@ -3,33 +3,33 @@
   <meta charset="utf-8">
   <head>
     <title>Test Charts</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style-november24-broncos-patriots.css">
   </head>
   <body>
     <div class="graph_container">
       <p class="title"><span class="broncos">Broncos</span> vs <span class="patriots">Patriots</span><br/> Sunday November 24th</p>
       <div class="column1">
         <h1>Per Hour<br /> - Raw</h1>
-        <div id="graph_container_1" class="graph"><h2># Tweets</h2><p>/game/tweets?time=hour&num=48</p></div>
-        <div id="graph_container_2" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=hour&num=48</p></div>
-        <div id="graph_container_3" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=hour&num=48</p></div>
-        <div id="graph_container_4" class="graph"><h2>Confidence</h2><p>/game/confidence?time=hour&num=48</p></div>
+        <div id="graph_container_1" class="graph"><h2># Tweets</h2><p>/game/tweets?time=hour&num=48 <br />&nbsp;</p></div>
+        <div id="graph_container_2" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=hour&num=48 <br />&nbsp;</p></div>
+        <div id="graph_container_3" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=hour&num=48 <br />&nbsp;</p></div>
+        <div id="graph_container_4" class="graph"><h2>Confidence</h2><p>/game/confidence?time=hour&num=48 <br />&nbsp;</p></div>
         <div id="graph_container_5" class="graph"><h2>Pos/Pos+Neg</h2><p>custom calculation</p></div>
       </div>
       <div class="column2">
         <h1>Per Minute<br /> - Raw</h1>
-        <div id="graph_container_6" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=480</p></div>
-        <div id="graph_container_7" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=480</p></div>
-        <div id="graph_container_8" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=480</p></div>
-        <div id="graph_container_9" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=480</p></div>
+        <div id="graph_container_6" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
+        <div id="graph_container_7" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
+        <div id="graph_container_8" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
+        <div id="graph_container_9" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
         <div id="graph_container_10" class="graph"><h2>Pos/Pos+Neg</h2><p>custom calculation</p></div>
       </div>
       <div class="column3">
         <h1>Per Minute<br /> - Smoothed</h1>
-        <div id="graph_container_11" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&num=480</p></div>
-        <div id="graph_container_12" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&num=480</p></div>
-        <div id="graph_container_13" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&num=480</p></div>
-        <div id="graph_container_14" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&num=480</p></div>
+        <div id="graph_container_11" class="graph"><h2># Tweets</h2><p>/game/tweets?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
+        <div id="graph_container_12" class="graph"><h2>Positive Mentions</h2><p>/game/pos?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
+        <div id="graph_container_13" class="graph"><h2>Negative Mentions</h2><p>/game/neg?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
+        <div id="graph_container_14" class="graph"><h2>Confidence</h2><p>/game/confidence?time=min&start=2013-11-24T18:00&end=2013-11-25T01:00</p></div>
         <div id="graph_container_15" class="graph"><h2>Pos/Pos+Neg</h2><p>custom calculation</p></div>
       </div>
       <div class="column1">
@@ -72,20 +72,21 @@
     // for each chart, this array contains : [0] = the data url, [1] = the desired front dataset (the AFC team or NFC team), [2] = the desired back dataset (AFC or NFC), [3] = the parse format, (optional)[4] = the smoothing amount.
     // some data urls are the live API, some are backed-up data files.
     var charts_data = [ 
-                        ["http://97.107.131.209:4577/game/tweets?time=hour&num=48", "nfc", "afc", 1],
-                        ["http://97.107.131.209:4577/game/pos?time=hour&num=48", "nfc", "afc", 1],
-                        ["http://97.107.131.209:4577/game/neg?time=hour&num=48", "nfc", "afc", 1],
-                        ["http://97.107.131.209:4577/game/confidence?time=hour&num=48", "afc", "nfc", 1],
+                        ["data/data-nov24broncospatriots-tweets-timehour-num48.json", "nfc", "afc", 1],
+                        ["data/data-nov24broncospatriots-pos-timehour-num48.json", "nfc", "afc", 1],
+                        ["data/data-nov24broncospatriots-neg-timehour-num48.json", "nfc", "afc", 1],
+                        ["data/data-nov24broncospatriots-confidence-timehour-num48.json", "afc", "nfc", 1],
                         ["pos/pos+neg_1", "afc", "nfc", 1],
-                        ["http://97.107.131.209:4577/game/tweets?time=min&num=480", "nfc", "afc", 2],
-                        ["http://97.107.131.209:4577/game/pos?time=min&num=480", "nfc", "afc", 2],
-                        ["http://97.107.131.209:4577/game/neg?time=min&num=480", "nfc", "afc", 2],
-                        ["http://97.107.131.209:4577/game/confidence?time=min&num=480", "afc", "nfc", 2],
+                        ["data/data-nov24broncospatriots-tweets-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "nfc", "afc", 2],
+                        ["data/data-nov24broncospatriots-pos-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "nfc", "afc", 2],
+                        ["data/data-nov24broncospatriots-neg-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "nfc", "afc", 2],
+                        ["data/data-nov24broncospatriots-confidence-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "afc", "nfc", 2],
                         ["pos/pos+neg_2", "afc", "nfc", 2],
-                        ["http://97.107.131.209:4577/game/tweets?time=min&num=480", "nfc", "afc", 2, 3],
-                        ["http://97.107.131.209:4577/game/pos?time=min&num=480", "nfc", "afc", 2, 3],
-                        ["http://97.107.131.209:4577/game/neg?time=min&num=480", "nfc", "afc", 2, 3],
-                        ["http://97.107.131.209:4577/game/confidence?time=min&num=480", "afc", "nfc", 2, 3],
+                        ["data/data-nov24broncospatriots-tweets-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "nfc", "afc", 2, 3],
+                        ["data/data-nov24broncospatriots-pos-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "nfc", "afc", 2, 3],
+                        ["data/data-nov24broncospatriots-neg-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "nfc", "afc", 2, 3],
+                        ["data/data-nov24broncospatriots-confidence-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "afc", "nfc", 2, 3],
+                        ["pos/pos+neg_2", "afc", "nfc", 2, 3],
                         // put game data (score) file here, once available.
                       ];
     
@@ -139,8 +140,8 @@
         
         // set data urls depending on the type specified in charts_data.
         var pos_url, neg_url;
-        if (cur_chart_url === "pos/pos+neg_1") { pos_url = "http://97.107.131.209:4577/game/pos?time=hour&num=48"; neg_url = "http://97.107.131.209:4577/game/neg?time=hour&num=48" }
-        else if (cur_chart_url === "pos/pos+neg_2") { pos_url = "http://97.107.131.209:4577/game/pos?time=min&num=480"; neg_url = "http://97.107.131.209:4577/game/neg?time=min&num=480" }
+        if (cur_chart_url === "pos/pos+neg_1") { pos_url = "data/data-nov24broncospatriots-pos-timehour-num48.json"; neg_url = "data/data-nov24broncospatriots-neg-timehour-num48.json" }
+        else if (cur_chart_url === "pos/pos+neg_2") { pos_url = "data/data-nov24broncospatriots-pos-timemin-start2013-11-24T1800-end2013-11-25T0100.json"; neg_url = "data/data-nov24broncospatriots-neg-timemin-start2013-11-24T1800-end2013-11-25T0100.json" }
 
         // get pos data
         d3.json(pos_url, function(error, json_data_pos) {
