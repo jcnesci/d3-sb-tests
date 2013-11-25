@@ -74,7 +74,7 @@
                         ["data/data-nov7chiefsbroncos-tweets-timemin-num1440.json", "value1", "value2", 2, 3],
                         ["data/data-nov7chiefsbroncos-pos-timemin-num1440.json", "value1", "value2", 2, 3],               // using a data file, because the live data didn't have an equal number of data points for both AFC and NFC. The data is a modified version of the live data to fix that.
                         ["data/data-nov7chiefsbroncos-confidence-timemin-num1440.json", "value1", "value2", 2, 3],
-                        ["data/game.tsv"],                                                                                 // this is a manully created file, with data put together from scores on the web.
+                        ["data/game-november17-broncos-chiefs.tsv"],                                                                                 // this is a manully created file, with data put together from scores on the web.
                       ];
     
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Init - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -103,7 +103,7 @@
         // Using a function/closure to localize "i" (and giving it another name, "this_i") so that "i" doesn't always end-up being the last index of the loop.
         (function(this_i){      //"localizing" i by using it in the inner function
           
-          if (charts_data[this_i][0] === "data/game.tsv") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
+          if (charts_data[this_i][0] === "data/game-november17-broncos-chiefs.tsv") { create_special_chart(charts_data[this_i][0], charts[this_i]); }
           else {
             d3.json(charts_data[this_i][0], function(error, json_data) {
               // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" ORIGINAL DATA : ")
@@ -121,7 +121,7 @@
     // for charts that are exceptions, we have custom treatment here.
     function create_special_chart(chart_data_url, chart) {
       
-      if (chart_data_url === "data/game.tsv") {
+      if (chart_data_url === "data/game-november17-broncos-chiefs.tsv") {
         d3.tsv(chart_data_url, function(error, data) {                            // manually collected data
 
           var parseDateFormat3 = d3.time.format("%M,%S").parse;

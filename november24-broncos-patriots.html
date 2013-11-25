@@ -34,8 +34,7 @@
       </div>
       <div class="column1">
         <h1>Game Data<br /> - Score</h1>
-        <div id="graph_container_16" class="graph"><p>T.B.D.</p></div>
-        
+        <div id="graph_container_16" class="graph"><p>manually collected</p></div>
       </div>
     </div>
     
@@ -87,7 +86,7 @@
                         ["data/data-nov24broncospatriots-neg-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "nfc", "afc", 2, 3],
                         ["data/data-nov24broncospatriots-confidence-timemin-start2013-11-24T1800-end2013-11-25T0100.json", "afc", "nfc", 2, 3],
                         ["pos/pos+neg_2", "afc", "nfc", 2, 3],
-                        // put game data (score) file here, once available.
+                        ["data/game-november24-broncos-patriots.tsv"],                                                                                 // this is a manully created file, with data put together from scores on the web.
                       ];
     
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Init - - -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -112,11 +111,11 @@
         // store the chart.
         charts[i] = cur_chart;
 
-        // Call the JSON data. For the data we currently have, value1 = Broncos (orange), and value2 = Chiefs (red).
+        // Call the JSON data. For the data we currently have, value1 = Broncos (orange), and value2 = Patriots (blue).
         // Using a function/closure to localize "i" (and giving it another name, "this_i") so that "i" doesn't always end-up being the last index of the loop.
         (function(this_i){      //"localizing" i by using it in the inner function
           
-          if (charts_data[this_i][0] === "data/game.tsv" || charts_data[this_i][0] === "pos/pos+neg_1" || charts_data[this_i][0] === "pos/pos+neg_2") { create_special_chart(this_i); }
+          if (charts_data[this_i][0] === "data/game-november24-broncos-patriots.tsv" || charts_data[this_i][0] === "pos/pos+neg_1" || charts_data[this_i][0] === "pos/pos+neg_2") { create_special_chart(this_i); }
           else {
             d3.json(charts_data[this_i][0], function(error, json_data) {
               // console.log("- - - - - - - - - - - - - - - - - - #"+ this_i +" ORIGINAL DATA : ")
@@ -207,8 +206,8 @@
           });
         });
       }
-      // special chart that displays game scoring data of November 17, Chiefs VS Broncos.
-      if (cur_chart_url === "data/game.tsv") {
+      // special chart that displays game scoring data of November 17, Patriots VS Broncos.
+      if (cur_chart_url === "data/game-november24-broncos-patriots.tsv") {
         var cur_chart = charts[chart_id];
 
         d3.tsv(cur_chart_url, function(error, data) {                            // manually collected data
@@ -218,12 +217,12 @@
           data.forEach(function(d) {
             d.time = parseDateFormat3(d.time);
             d["denver"] = +d["denver"];
-            d["kansas"] = +d["kansas"];
+            d["newengland"] = +d["newengland"];
           });  
           // Domains.
           x.domain(d3.extent(data, function(d) { return d.time; }));
           y.domain([0,
-            d3.max(data, function(d) { return Math.max(d["denver"], d["kansas"]); })
+            d3.max(data, function(d) { return Math.max(d["denver"], d["newengland"]); })
           ]);
           // Draw the lines.
           var line1 = d3.svg.line()
@@ -233,7 +232,7 @@
           var line2 = d3.svg.line()
             .interpolate("step-after")
             .x(function(d) { return x(d.time); })
-            .y(function(d) { return y(d["kansas"]); });
+            .y(function(d) { return y(d["newengland"]); });
           cur_chart.datum(data);                              // why is this necessary?
           cur_chart.append("path")
             .attr("class", "special_line1")
