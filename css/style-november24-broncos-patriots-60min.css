@@ -69,7 +69,7 @@ span.broncos {
 }
 /* Controls color and size of label text for ticks on axes. */
 .axis {
-  font-size: 0.8em;
+  font-size: 1em;
   fill: #777;
 }
 .axis path,
